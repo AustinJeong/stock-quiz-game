@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>주식 지식 퀴즈 게임</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #1e293b;
+      --correct: #16a34a;
+      --wrong: #dc2626;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .score-badge {
+      background: #eff6ff;
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+    }
+
+    .quiz-card { display: none; }
+    .quiz-card.active { display: block; }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: bold;
+      border-radius: 6px;
+      background: #e2e8f0;
+      margin-right: 6px;
+    }
+
+    .question {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 16px 0 20px;
+      line-height: 1.4;
+    }
+
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-btn {
+      padding: 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 10px;
+      background: white;
+      text-align: left;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .option-btn.correct {
+      border-color: var(--correct);
+      background-color: #f0fdf4;
+      color: var(--correct);
+      font-weight: bold;
+    }
+
+    .option-btn.wrong {
+      border-color: var(--wrong);
+      background-color: #fef2f2;
+      color: var(--wrong);
+    }
+
+    .explanation-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 8px;
+      background: #f1f5f9;
+      font-size: 14px;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .next-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 14px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      display: none;
+    }
+
+    /* 슬립 모드 로딩 화면 */
+    .loading-screen {
+      text-align: center;
+      padding: 40px 10px;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #e2e8f0;
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h2 style="margin: 0; font-size: 20px;">📈 주식 지식 퀴즈</h2>
+      <div class="score-badge" id="scoreDisplay">점수: 0</div>
+    </div>
+
+    <!-- 1. 백엔드 연결 로딩 화면 (Render 슬립 대기) -->
+    <div id="loadingScreen" class="loading-screen">
+      <div class="spinner"></div>
+      <p id="loadingText" style="font-weight: bold; color: #475569;">백엔드 서버에 연결 중입니다...</p>
+      <p style="font-size: 12px; color: #94a3b8;">무료 서버 특성상 첫 접속 시 30~50초 정도 소요될 수 있습니다.</p>
+    </div>
+
+    <!-- 2. 퀴즈 화면 -->
+    <div id="quizCard" class="quiz-card">
+      <div>
+        <span class="tag" id="tierTag" style="background:#dbeafe; color:#1e40af;">초급</span>
+        <span class="tag" id="categoryTag">기초용어</span>
+      </div>
+
+      <div class="question" id="questionText">질문이 여기에 표시됩니다.</div>
+
+      <div class="options-grid" id="optionsContainer"></div>
+
+      <div id="explanationBox" class="explanation-box"></div>
+
+      <button id="nextBtn" class="next-btn" onclick="nextQuestion()">다음 문제 ▶</button>
+    </div>
+  </div>
+
+  <script>
+    // ⚠️ 중요: Render 배포 완료 후 본인의 Render API 주소로 변경하세요!
+    // 로컬 테스트 시에는 'http://127.0.0.1:8000' 사용
+    const API_BASE_URL = 'https://your-render-app-name.onrender.com';
+
+    let quizzes = [];
+    let currentIndex = 0;
+    let totalScore = 0;
+
+    // 페이지 로드 시 백엔드 API에서 퀴즈 데이터 수집
+    async function initGame() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/quizzes`);
+        if (!response.ok) throw new Error('서버 응답 오류');
+        
+        quizzes = await response.json();
+        
+        // 로딩 화면 숨기고 퀴즈 화면 표시
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('quizCard').classList.add('active');
+        
+        renderQuiz();
+      } catch (error) {
+        console.error('API 연결 실패:', error);
+        document.getElementById('loadingText').innerText = '서버 연결에 실패했습니다. 페이지를 새로고침해 주세요.';
+      }
+    }
+
+    // 현재 문제 렌더링
+    function renderQuiz() {
+      const q = quizzes[currentIndex];
+      document.getElementById('tierTag').innerText = q.tier;
+      document.getElementById('categoryTag').innerText = q.category;
+      document.getElementById('questionText').innerText = `Q${currentIndex + 1}. ${q.question}`;
+      
+      const optionsContainer = document.getElementById('optionsContainer');
+      optionsContainer.innerHTML = '';
+
+      q.options.forEach((optText, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerText = `${index + 1}. ${optText}`;
+        btn.onclick = () => submitAnswer(index, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      document.getElementById('explanationBox').style.display = 'none';
+      document.getElementById('nextBtn').style.display = 'none';
+    }
+
+    // 유저 답안 제출 및 검증 API 호출
+    async function submitAnswer(selectedIndex, selectedBtn) {
+      // 모든 버튼 비활성화
+      const buttons = document.querySelectorAll('.option-btn');
+      buttons.forEach(btn => btn.disabled = true);
+
+      const q = quizzes[currentIndex];
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/quiz/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            quiz_id: q.id,
+            selected_index: selectedIndex
+          })
+        });
+
+        const result = await res.json();
+
+        // 정답/오답 스타일 적용
+        if (result.is_correct) {
+          selectedBtn.classList.add('correct');
+          totalScore += result.points;
+          document.getElementById('scoreDisplay').innerText = `점수: ${totalScore}`;
+        } else {
+          selectedBtn.classList.add('wrong');
+          buttons[result.correct_index].classList.add('correct');
+        }
+
+        // 해설 표시
+        const expBox = document.getElementById('explanationBox');
+        expBox.innerHTML = `<strong>💡 해설:</strong> ${result.explanation}`;
+        expBox.style.display = 'block';
+
+        // 다음 버튼 표시
+        document.getElementById('nextBtn').style.display = 'block';
+
+      } catch (err) {
+        alert('답안 제출 중 오류가 발생했습니다.');
+      }
+    }
+
+    // 다음 문제로 이동
+    function nextQuestion() {
+      currentIndex++;
+      if (currentIndex < quizzes.length) {
+        renderQuiz();
+      } else {
+        alert(`게임 종료! 최종 점수: ${totalScore}점`);
+        currentIndex = 0;
+        totalScore = 0;
+        document.getElementById('scoreDisplay').innerText = '점수: 0';
+        renderQuiz();
+      }
+    }
+
+    // 게임 시작
+    initGame();
+  </script>
+</body>
+</html>
