@@ -24,6 +24,13 @@ JSON_PATH = os.path.join(BASE_DIR, "stage1_quizzes.json")
 try:
     with open(JSON_PATH, "r", encoding="utf-8") as f:
         QUIZ_DATABASE = json.load(f)
+    
+    # ★ 핵심: 서버 실행 시 보기(options)를 무작위로 섞고 정답 인덱스(answer_index)를 자동 재설정
+    for quiz in QUIZ_DATABASE:
+        correct_text = quiz["options"][quiz["answer_index"]]  # 원래 정답 텍스트 보관
+        random.shuffle(quiz["options"])                      # 보기 순서 무작위 셔플
+        quiz["answer_index"] = quiz["options"].index(correct_text)  # 새로 섞인 정답 위치 반영
+
 except Exception as e:
     print(f"JSON 파일 로드 실패: {e}")
     QUIZ_DATABASE = []
@@ -46,12 +53,11 @@ def health_check():
     return {"status": "ok", "total_quizzes": len(QUIZ_DATABASE)}
 
 @app.get("/api/quizzes")
-def get_random_quizzes(count: int = 10):
-    """100문제 중 무작위로 count개(기본 10개)를 무작위 선택하여 반환"""
+def get_random_quizzes(count: int = 5):
+    """100문제 중 무작위로 count개(기본 5개)를 무작위 선택하여 반환"""
     if not QUIZ_DATABASE:
         return []
     
-    # 100문제 중 무작위 5문제 추출
     selected = random.sample(QUIZ_DATABASE, min(count, len(QUIZ_DATABASE)))
     
     safe_quizzes = []
