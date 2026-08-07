@@ -289,11 +289,19 @@
       if (currentIndex < quizzes.length) {
         renderQuiz();
       } else {
-        alert(`게임 종료! 최종 점수: ${totalScore}점`);
+        alert(`🎉 게임 종료! 최종 점수: ${totalScore}점\n새로운 5문제를 불러와 다시 시작합니다!`);
+        
+        // 점수 및 인덱스 초기화
         currentIndex = 0;
         totalScore = 0;
         document.getElementById('scoreDisplay').innerText = '점수: 0';
-        renderQuiz();
+    
+        // 화면을 로딩 상태로 돌리고 서버에서 새로운 무작위 5문제 수집
+        document.getElementById('quizCard').classList.remove('active');
+        document.getElementById('loadingScreen').style.display = 'block';
+        document.getElementById('loadingText').innerText = '새로운 퀴즈 세트를 불러오는 중입니다...';
+        
+        initGame();
       }
     }
 
