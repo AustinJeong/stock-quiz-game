@@ -19,6 +19,7 @@
       background-color: var(--bg);
       color: var(--text);
       display: flex;
+      flex-direction: column; /* 세로 정렬 추가 */
       justify-content: center;
       align-items: center;
       min-height: 100vh;
@@ -184,19 +185,18 @@
 
       <button id="nextBtn" class="next-btn" onclick="nextQuestion()">다음 문제 ▶</button>
     </div>
+
+    <!-- 하단 푸터 (container 안쪽으로 이동) -->
+    <footer style="margin-top: 30px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+      <p style="margin: 0 0 6px 0;">© 2026 주식 지식 퀴즈 게임. All rights reserved.</p>
+      <p style="margin: 0;">
+        <a href="terms.html" style="color: #2563eb; text-decoration: none; margin: 0 6px; font-weight: bold;">이용약관 및 면책조항</a> | 
+        <a href="privacy.html" style="color: #2563eb; text-decoration: none; margin: 0 6px;">개인정보처리방침</a>
+      </p>
+    </footer>
   </div>
-  <!-- 하단 푸터 (Footer) -->
-  <footer style="margin-top: 40px; text-align: center; font-size: 13px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-    <p>© 2026 주식 지식 퀴즈 게임. All rights reserved.</p>
-    <p>
-      <a href="terms.html" style="color: #2563eb; text-decoration: none; margin: 0 8px; font-weight: bold;">이용약관 및 면책조항</a> | 
-      <a href="privacy.html" style="color: #2563eb; text-decoration: none; margin: 0 8px;">개인정보처리방침</a>
-    </p>
-  </footer>
-  
+
   <script>
-    // ⚠️ 중요: Render 배포 완료 후 본인의 Render API 주소로 변경하세요!
-    // 로컬 테스트 시에는 'http://127.0.0.1:8000' 사용
     const API_BASE_URL = 'https://stock-quiz-game.onrender.com';
 
     let quizzes = [];
@@ -246,7 +246,6 @@
 
     // 유저 답안 제출 및 검증 API 호출
     async function submitAnswer(selectedIndex, selectedBtn) {
-      // 모든 버튼 비활성화
       const buttons = document.querySelectorAll('.option-btn');
       buttons.forEach(btn => btn.disabled = true);
 
@@ -264,7 +263,6 @@
 
         const result = await res.json();
 
-        // 정답/오답 스타일 적용
         if (result.is_correct) {
           selectedBtn.classList.add('correct');
           totalScore += result.points;
@@ -274,12 +272,10 @@
           buttons[result.correct_index].classList.add('correct');
         }
 
-        // 해설 표시
         const expBox = document.getElementById('explanationBox');
         expBox.innerHTML = `<strong>💡 해설:</strong> ${result.explanation}`;
         expBox.style.display = 'block';
 
-        // 다음 버튼 표시
         document.getElementById('nextBtn').style.display = 'block';
 
       } catch (err) {
@@ -301,7 +297,6 @@
       }
     }
 
-    // 게임 시작
     initGame();
   </script>
 </body>
