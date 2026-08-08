@@ -22,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "stage1_quizzes.json")
 CARDS_PATH = os.path.join(BASE_DIR, "cards.json")
 ACHIEVEMENTS_PATH = os.path.join(BASE_DIR, "achievements.json")
+REBIRTH_SHOP_PATH = os.path.join(BASE_DIR, "rebirth_shop.json")
 
 try:
     with open(JSON_PATH, "r", encoding="utf-8") as f:
@@ -51,6 +52,13 @@ except Exception as e:
     print(f"달성과제 JSON 파일 로드 실패: {e}")
     ACHIEVEMENTS_DATABASE = []
 
+try:
+    with open(REBIRTH_SHOP_PATH, "r", encoding="utf-8") as f:
+        REBIRTH_SHOP_DATABASE = json.load(f)
+except Exception as e:
+    print(f"환생 상점 JSON 파일 로드 실패: {e}")
+    REBIRTH_SHOP_DATABASE = []
+
 # 2. 데이터 모델
 class VerifyRequest(BaseModel):
     quiz_id: str
@@ -70,7 +78,8 @@ def health_check():
         "status": "ok",
         "total_quizzes": len(QUIZ_DATABASE),
         "total_cards": len(CARD_DATABASE),
-        "total_achievements": len(ACHIEVEMENTS_DATABASE)
+        "total_achievements": len(ACHIEVEMENTS_DATABASE),
+        "total_rebirth_shop_items": len(REBIRTH_SHOP_DATABASE)
     }
 
 @app.get("/api/cards")
@@ -82,6 +91,11 @@ def get_cards():
 def get_achievements():
     """달성과제(업적) 마스터 목록 반환"""
     return ACHIEVEMENTS_DATABASE
+
+@app.get("/api/rebirth-shop")
+def get_rebirth_shop():
+    """환생 상점 상품 목록 반환"""
+    return REBIRTH_SHOP_DATABASE
 
 @app.get("/api/quizzes")
 def get_random_quizzes(count: int = 10):

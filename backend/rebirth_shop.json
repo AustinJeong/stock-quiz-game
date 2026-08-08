@@ -1,0 +1,62 @@
+[
+  {
+    "id": "reb_slot",
+    "name": "카드 슬롯 확장 (+1)",
+    "desc": "카드를 2개 동시 장착 가능 (메인 + 서브 카드 시너지)",
+    "price": 1,
+    "maxBuy": 1,
+    "type": "slot_expand",
+    "icon": "🎴"
+  },
+  {
+    "id": "reb_gacha_rate",
+    "name": "UR/SSR 뽑기 확률 영구 상승",
+    "desc": "UR 뽑기 확률 +0.2%p, SSR 확률 +1.0%p 영구 증가",
+    "price": 1,
+    "maxBuy": 0,
+    "type": "gacha_rate",
+    "icon": "🎰",
+    "urBonus": 0.2,
+    "ssrBonus": 1.0
+  },
+  {
+    "id": "reb_gacha_pt",
+    "name": "정답 시 가챠포인트 영구 +3pt",
+    "desc": "퀴즈 정답 맞출 때마다 가챠포인트 +3pt 영구 추가",
+    "price": 1,
+    "maxBuy": 0,
+    "type": "gacha_pt",
+    "icon": "💎",
+    "value": 3
+  },
+  {
+    "id": "reb_score_mult",
+    "name": "영구 점수 멀티플라이어 (+20%)",
+    "desc": "모든 퀴즈 획득 점수 +20% 영구 증가",
+    "price": 1,
+    "maxBuy": 0,
+    "type": "score",
+    "icon": "⚡",
+    "value": 0.20
+  },
+  {
+    "id": "reb_timer",
+    "name": "기본 제한시간 영구 +2초",
+    "desc": "모든 퀴즈 기본 제한시간 +2초 영구 증대",
+    "price": 1,
+    "maxBuy": 0,
+    "type": "timer",
+    "icon": "⏱️",
+    "value": 2
+  },
+  {
+    "id": "reb_card_ur",
+    "name": "[환생 전용 UR] 월가의 재림",
+    "desc": "환생 한정 UR 카드 획득 (점수+50%, 제한시간+5초, 목숨+1개)",
+    "price": 2,
+    "maxBuy": 1,
+    "type": "grant_card",
+    "cardId": "ur1",
+    "icon": "👑"
+  }
+]

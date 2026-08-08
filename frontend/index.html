@@ -186,6 +186,23 @@
       }
     }
 
+    .rebirth-tab {
+      flex: 1;
+      padding: 8px;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      font-size: 13px;
+      font-weight: bold;
+      color: #64748b;
+      cursor: pointer;
+    }
+
+    .rebirth-tab.active {
+      color: #9333ea;
+      border-bottom-color: #9333ea;
+    }
+
     /* 대시보드 상태바 */
     .status-bar {
       display: flex;
@@ -593,13 +610,17 @@
           <button class="gacha-shop-btn" onclick="openGachaModal()">🎰 뽑기샵</button>
           <button class="deck-btn" onclick="openDeckModal()">🎴 도감</button>
           <button class="achievement-btn" onclick="openAchievementModal()">🏆 달성과제</button>
+          <button onclick="openRebirthModal()" style="background: linear-gradient(135deg, #a855f7, #6b21a8); color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; box-shadow: 0 2px 6px rgba(168, 85, 247, 0.4);">🌌 환생</button>
         </div>
       </div>
 
       <!-- 보유 포인트 잔액 표시 -->
       <div class="point-badge-box">
-        <span>💎 보유 가챠 포인트</span>
-        <span id="mainGachaPoints" style="font-size: 18px;">0 pt</span>
+        <div>
+          <span>💎 보유 가챠 포인트:</span>
+          <span id="mainGachaPoints" style="font-size: 18px; margin-left: 4px;">0 pt</span>
+        </div>
+        <span id="mainRebirthBadge" style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 1px solid #d8b4fe; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; color: #7e22ce;">🌌 환생 0회차 | 환생pt: 0</span>
       </div>
 
       <div class="buff-card-info" id="mainBuffInfo">
@@ -748,6 +769,60 @@
     </div>
   </div>
 
+  <!-- 8. 🌌 환생 및 환생 상점 통합 모달 -->
+  <div class="modal-overlay" id="rebirthModal">
+    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; width: 440px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
+        <h3 style="margin: 0;">🌌 자산 환생 & 환생 상점</h3>
+        <span onclick="closeRebirthModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
+        <span style="font-size: 13px; color: #64748b;">자산을 재투자하여 신화의 스펙을 달성하세요!</span>
+        <span id="rebirthHeaderStats" style="font-size: 12px; font-weight: bold; color: #9333ea;">환생: 0회차 | 환생pt: 0</span>
+      </div>
+
+      <!-- 모달 탭 메뉴 -->
+      <div style="display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 12px; flex-shrink: 0;">
+        <button class="rebirth-tab active" id="rebirthTab1" onclick="switchRebirthTab('rebirth')">🌌 환생하기</button>
+        <button class="rebirth-tab" id="rebirthTab2" onclick="switchRebirthTab('shop')">🛒 환생 상점</button>
+      </div>
+
+      <!-- 탭 1: 환생 실행 영역 -->
+      <div id="rebirthSectionExecute" style="flex: 1; overflow-y: auto; display: block;">
+        <div style="background: linear-gradient(135deg, #faf5ff, #f3e8ff); border: 2px solid #c084fc; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 12px;">
+          <div style="font-size: 14px; font-weight: bold; color: #6b21a8;">🌌 현재 환생 단계</div>
+          <div style="font-size: 22px; font-weight: bold; color: #9333ea; margin: 6px 0;" id="rebirthCurrentStepText">0 회차</div>
+          <div style="font-size: 12px; color: #7e22ce;">환생 시 <strong style="color: #6b21a8;">1 환생 포인트(1 pt)</strong>를 획득합니다!</div>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 12px; font-size: 13px; color: #475569;">
+          <div style="font-weight: bold; color: #1e293b; margin-bottom: 6px;">💡 환생 필요 조건 안내:</div>
+          <div>• 필요 가챠 포인트: <strong style="color: #2563eb;" id="rebirthReqCostText">10,000 pt</strong></div>
+          <div>• 보유 가챠 포인트: <span style="font-weight: bold; color: #9333ea;" id="rebirthOwnedCostText">0 pt</span></div>
+          <div class="achievement-progress-bar" style="margin-top: 8px;">
+            <div class="achievement-progress-fill" id="rebirthProgressFill" style="width: 0%; background: linear-gradient(90deg, #a855f7, #6366f1);"></div>
+          </div>
+        </div>
+
+        <button id="executeRebirthBtn" onclick="executeRebirth()" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #a855f7, #7e22ce); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);">
+          🌌 자산 환생 실행 (1 환생pt 획득)
+        </button>
+      </div>
+
+      <!-- 탭 2: 환생 상점 영역 -->
+      <div id="rebirthSectionShop" style="flex: 1; overflow-y: auto; display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; background: #faf5ff; border: 1px solid #d8b4fe; padding: 10px 14px; border-radius: 10px; margin-bottom: 10px;">
+          <span style="font-size: 13px; font-weight: bold; color: #6b21a8;">🔮 보유 환생 포인트</span>
+          <span style="font-size: 16px; font-weight: bold; color: #9333ea;" id="rebirthShopPointsVal">0 pt</span>
+        </div>
+
+        <div id="rebirthShopContainer" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+
+      <button onclick="closeRebirthModal()" style="width: 100%; margin-top: 12px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex-shrink: 0;">닫기</button>
+    </div>
+  </div>
+
   <!-- 7. 퀴즈 세트 결산 리포트 모달 -->
   <div class="modal-overlay" id="settlementModal">
     <div class="modal-card" style="max-width: 440px; text-align: center;">
@@ -838,16 +913,94 @@
     // 저장 데이터
     let myCards = JSON.parse(localStorage.getItem('sq_my_cards')) || ['c1'];
     let equippedCardId = localStorage.getItem('sq_equipped_card') || 'c1';
+    let equippedSubCardId = localStorage.getItem('sq_equipped_sub_card') || null;
     let gachaPoints = parseInt(localStorage.getItem('sq_gacha_points')) || 0; // 가챠 포인트 누적 저장
     let totalCorrectAnswers = parseInt(localStorage.getItem('sq_total_correct_answers')) || 0; // 누적 정답 수 저장
     let cardCounts = JSON.parse(localStorage.getItem('sq_card_counts')) || {}; // 카드별 보유 장수
     let cardLevels = JSON.parse(localStorage.getItem('sq_card_levels')) || {}; // 카드별 성 등급 (0, 1, 2, 3)
+
+    let rebirthCount = parseInt(localStorage.getItem('sq_rebirth_count')) || 0;
+    let rebirthPoints = parseInt(localStorage.getItem('sq_rebirth_points')) || 0;
+    let rebirthUpgrades = JSON.parse(localStorage.getItem('sq_rebirth_upgrades')) || {};
+    let REBIRTH_SHOP_ITEMS = [];
 
     // 소유 카드 초기 개수 & 성 등급 동기화
     myCards.forEach(cId => {
       if (cardCounts[cId] === undefined) cardCounts[cId] = 1;
       if (cardLevels[cId] === undefined) cardLevels[cId] = 0;
     });
+
+    function getRebirthCost(rCount) {
+      if (rCount === 0) return 10000;
+      if (rCount === 1) return 25000;
+      if (rCount === 2) return 50000;
+      return Math.floor(100000 * Math.pow(2, rCount - 3));
+    }
+
+    function getRebirthBuffs() {
+      const buffs = {
+        scoreBuff: 0,
+        timerBuff: 0,
+        gachaPointBuff: 0
+      };
+
+      const scoreLvl = rebirthUpgrades['reb_score_mult'] || 0;
+      if (scoreLvl > 0) buffs.scoreBuff += 0.20 * scoreLvl;
+
+      const timerLvl = rebirthUpgrades['reb_timer'] || 0;
+      if (timerLvl > 0) buffs.timerBuff += 2 * timerLvl;
+
+      const gachaLvl = rebirthUpgrades['reb_gacha_pt'] || 0;
+      if (gachaLvl > 0) buffs.gachaPointBuff += 3 * gachaLvl;
+
+      return buffs;
+    }
+
+    function getEquippedCardsBuffs() {
+      const mainCard = CARD_DATABASE.find(c => c.id === equippedCardId);
+      const subCard = CARD_DATABASE.find(c => c.id === equippedSubCardId);
+
+      const mainEff = getEffectiveCardValues(mainCard);
+      const subEff = getEffectiveCardValues(subCard);
+
+      let scoreRate = 0;
+      let timerAdd = 0;
+      let heartAdd = 0;
+      let shieldAdd = 0;
+      let comboAdd = 0;
+      let gachaAdd = 0;
+
+      [{ c: mainCard, eff: mainEff }, { c: subCard, eff: subEff }].forEach(item => {
+        if (item.c && item.eff) {
+          const c = item.c;
+          const eff = item.eff;
+          if (c.effectType === 'score') scoreRate += eff.value;
+          else if (c.effectType === 'timer') timerAdd += eff.value;
+          else if (c.effectType === 'heart') heartAdd += eff.value;
+          else if (c.effectType === 'shield') shieldAdd += eff.value;
+          else if (c.effectType === 'combo_bonus') comboAdd += eff.value;
+          else if (c.effectType === 'gacha_point') gachaAdd += eff.value;
+          else if (c.effectType === 'all_buff') {
+            scoreRate += eff.value;
+            timerAdd += (eff.timerValue || 5);
+            heartAdd += (eff.heartValue || 1);
+          }
+        }
+      });
+
+      return {
+        scoreRate,
+        timerAdd,
+        heartAdd,
+        shieldAdd,
+        comboAdd,
+        gachaAdd,
+        mainCard,
+        subCard,
+        mainEff,
+        subEff
+      };
+    }
 
     let quizzes = [];
     let currentIndex = 0;
@@ -1034,23 +1187,22 @@
       }
     }
 
-    // 달성과제 데이터 로드 (백엔드 API 단일 원본)
-    async function loadAchievements() {
+    // 환생 상점 데이터 로드
+    async function loadRebirthShop() {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/achievements`);
+        const response = await fetch(`${API_BASE_URL}/api/rebirth-shop`);
         if (response.ok) {
-          ACHIEVEMENTS = await response.json();
-        } else {
-          console.error('달성과제 API 응답 오류:', response.status);
+          REBIRTH_SHOP_ITEMS = await response.json();
         }
       } catch (e) {
-        console.error('달성과제 API 연결 실패:', e);
+        console.error('환생 상점 API 연결 실패:', e);
       }
     }
 
     // 1. 서버 초기 연결
     async function initGame() {
-      await Promise.all([loadCards(), loadAchievements()]);
+      await Promise.all([loadCards(), loadAchievements(), loadRebirthShop()]);
+      updateMainRebirthBadge();
       updateMainBuffDisplay();
 
 
@@ -1068,43 +1220,52 @@
       }
     }
 
+    function updateMainRebirthBadge() {
+      const badge = document.getElementById('mainRebirthBadge');
+      if (badge) {
+        badge.innerText = `🌌 환생 ${rebirthCount}회차 | 환생pt: ${rebirthPoints}`;
+      }
+      const headerStats = document.getElementById('rebirthHeaderStats');
+      if (headerStats) {
+        headerStats.innerText = `환생: ${rebirthCount}회차 | 환생pt: ${rebirthPoints}`;
+      }
+    }
+
     // 메인 화면 버프 및 포인트 상태 업데이트
     function updateMainBuffDisplay() {
-      const card = CARD_DATABASE.find(c => c.id === equippedCardId);
       const textEl = document.getElementById('mainBuffText');
-      document.getElementById('mainGachaPoints').innerText = `${gachaPoints} pt`;
+      document.getElementById('mainGachaPoints').innerText = `${gachaPoints.toLocaleString()} pt`;
 
+      const eqBuffs = getEquippedCardsBuffs();
       const achBuffs = getAchievementBuffs();
-      baseTimeLimit = 10 + achBuffs.timerBuff;
+      const rebBuffs = getRebirthBuffs();
+
+      baseTimeLimit = 10 + achBuffs.timerBuff + rebBuffs.timerBuff + eqBuffs.timerAdd;
 
       let cardText = '';
-      if (card) {
-        const eff = getEffectiveCardValues(card);
-        const starsHtml = renderStarsHtml(eff.starLevel);
-        const effDesc = getEffectiveCardDesc(card);
-        cardText = `<span class="grade-badge badge-${card.grade}">${card.grade}</span> ${starsHtml} <strong>${card.name}</strong> (${effDesc})`;
-        if (card.effectType === 'timer') {
-          baseTimeLimit += eff.value;
-        } else if (card.effectType === 'all_buff') {
-          baseTimeLimit += (eff.timerValue || 5);
+      if (eqBuffs.mainCard) {
+        cardText = `<span class="grade-badge badge-${eqBuffs.mainCard.grade}">${eqBuffs.mainCard.grade}</span> ${renderStarsHtml(eqBuffs.mainEff.starLevel)} <strong>${eqBuffs.mainCard.name}</strong>`;
+        if (eqBuffs.subCard) {
+          cardText += ` + <span class="grade-badge badge-${eqBuffs.subCard.grade}">${eqBuffs.subCard.grade}</span> ${renderStarsHtml(eqBuffs.subEff.starLevel)} <strong>${eqBuffs.subCard.name}</strong> (서브)`;
         }
       } else {
         cardText = '장착 중인 카드가 없습니다.';
       }
 
       const passiveSummary = [];
-      if (achBuffs.scoreBuff > 0) passiveSummary.push(`점수 +${Math.round(achBuffs.scoreBuff * 100)}%`);
-      if (achBuffs.timerBuff > 0) passiveSummary.push(`시간 +${achBuffs.timerBuff}초`);
+      const totalScoreMult = achBuffs.scoreBuff + rebBuffs.scoreBuff;
+      if (totalScoreMult > 0) passiveSummary.push(`점수 +${Math.round(totalScoreMult * 100)}%`);
+      if (achBuffs.timerBuff + rebBuffs.timerBuff > 0) passiveSummary.push(`시간 +${achBuffs.timerBuff + rebBuffs.timerBuff}초`);
       if (achBuffs.heartBuff > 0) passiveSummary.push(`목숨 +${achBuffs.heartBuff}개`);
       if (achBuffs.shieldBuff > 0) passiveSummary.push(`보호막 +${achBuffs.shieldBuff}회`);
       if (achBuffs.comboBuff > 0) passiveSummary.push(`콤보 +${achBuffs.comboBuff}점`);
-      if (achBuffs.gachaPointBuff > 0) passiveSummary.push(`가챠pt +${achBuffs.gachaPointBuff}pt`);
+      if (achBuffs.gachaPointBuff + rebBuffs.gachaPointBuff > 0) passiveSummary.push(`가챠pt +${achBuffs.gachaPointBuff + rebBuffs.gachaPointBuff}pt`);
 
       let passiveText = '';
       if (passiveSummary.length > 0) {
-        passiveText = `<div style="margin-top: 6px; font-size: 12px; color: #d97706; font-weight: bold;">🏆 달성과제 패시브 보너스: ${passiveSummary.join(', ')}</div>`;
+        passiveText = `<div style="margin-top: 6px; font-size: 12px; color: #d97706; font-weight: bold;">🏆 패시브 총 보너스: ${passiveSummary.join(', ')}</div>`;
       } else {
-        passiveText = `<div style="margin-top: 6px; font-size: 12px; color: #94a3b8;">🏆 달성과제 패시브: 미적용 (달성과제를 완료해보세요!)</div>`;
+        passiveText = `<div style="margin-top: 6px; font-size: 12px; color: #94a3b8;">🏆 패시브 보너스 미적용</div>`;
       }
 
       textEl.innerHTML = cardText + passiveText;
@@ -1133,19 +1294,13 @@
       sessionCardGachaPts = 0;
       sessionAchGachaPts = 0;
 
-      const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      const cardEff = getEffectiveCardValues(card);
+      const eqBuffs = getEquippedCardsBuffs();
       const achBuffs = getAchievementBuffs();
 
-      let bonusHeart = achBuffs.heartBuff;
-      if (cardEff) {
-        if (card.effectType === 'heart') bonusHeart += cardEff.value;
-        else if (card.effectType === 'all_buff') bonusHeart += (cardEff.heartValue || 1);
-      }
+      let bonusHeart = achBuffs.heartBuff + eqBuffs.heartAdd;
       lives = 3 + bonusHeart;
 
-      shieldCount = (card && card.effectType === 'shield') ? cardEff.value : 0;
-      shieldCount += achBuffs.shieldBuff;
+      shieldCount = eqBuffs.shieldAdd + achBuffs.shieldBuff;
 
       document.getElementById('btn5050').disabled = false;
       document.getElementById('btnTime').disabled = false;
@@ -1155,15 +1310,10 @@
     }
 
     function updateHeartsDisplay() {
-      const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      const cardEff = getEffectiveCardValues(card);
+      const eqBuffs = getEquippedCardsBuffs();
       const achBuffs = getAchievementBuffs();
 
-      let bonusHeart = achBuffs.heartBuff;
-      if (cardEff) {
-        if (card.effectType === 'heart') bonusHeart += cardEff.value;
-        else if (card.effectType === 'all_buff') bonusHeart += (cardEff.heartValue || 1);
-      }
+      let bonusHeart = achBuffs.heartBuff + eqBuffs.heartAdd;
       const maxLives = 3 + bonusHeart;
       const heartStr = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, maxLives - lives));
       document.getElementById('heartsDisplay').innerText = heartStr;
@@ -1281,26 +1431,20 @@
 
           const speedBonus = Math.floor(timeLeft * 10);
           const achBuffs = getAchievementBuffs();
-          const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-          const cardEff = getEffectiveCardValues(card);
+          const rebBuffs = getRebirthBuffs();
+          const eqBuffs = getEquippedCardsBuffs();
 
           // 콤보 분해
           const baseComboBonus = combo > 1 ? combo * 20 : 0;
-          let cardComboBonus = 0;
-          if (cardEff && card.effectType === 'combo_bonus') {
-            cardComboBonus = Math.floor(combo * cardEff.value);
-          }
+          const cardComboBonus = Math.floor(combo * eqBuffs.comboAdd);
           const achComboBonus = achBuffs.comboBuff > 0 ? Math.floor(combo * achBuffs.comboBuff) : 0;
 
           // 기본점수 (퀴즈 점수 + 속도 보너스 + 기본 콤보)
           const baseQPoints = result.points + speedBonus + baseComboBonus;
 
           // 배율 분해
-          let cardScoreRate = 0;
-          if (cardEff && (card.effectType === 'score' || card.effectType === 'all_buff')) {
-            cardScoreRate = cardEff.value;
-          }
-          const achScoreRate = achBuffs.scoreBuff;
+          const cardScoreRate = eqBuffs.scoreRate;
+          const achScoreRate = achBuffs.scoreBuff + rebBuffs.scoreBuff;
 
           // 세부 분해 계산
           const qBaseContribution = baseQPoints;
@@ -1316,8 +1460,8 @@
           document.getElementById('scoreDisplay').innerText = `점수: ${totalScore}`;
 
           // 가챠 포인트 분해 (정답 시 추가 획득)
-          let cardGachaAdd = (cardEff && card.effectType === 'gacha_point') ? cardEff.value : 0;
-          let achGachaAdd = achBuffs.gachaPointBuff;
+          let cardGachaAdd = eqBuffs.gachaAdd;
+          let achGachaAdd = achBuffs.gachaPointBuff + rebBuffs.gachaPointBuff;
 
           sessionCardGachaPts += cardGachaAdd;
           sessionAchGachaPts += achGachaAdd;
@@ -1480,15 +1624,25 @@
       localStorage.setItem('sq_gacha_points', gachaPoints);
       updateGachaModalUI();
 
-      // 무작위 추첨
-      const rand = Math.random() * 100;
+      // 무작위 추첨 (환생 UR/SSR 확률 업 반영)
+      let cardRates = CARD_DATABASE.map(c => {
+        let r = c.rate;
+        const rateLevel = rebirthUpgrades['reb_gacha_rate'] || 0;
+        if (rateLevel > 0) {
+          if (c.grade === 'UR') r += (0.2 * rateLevel) / 5;
+          else if (c.grade === 'SSR') r += (1.0 * rateLevel) / 10;
+        }
+        return { card: c, rate: r };
+      });
+      let totalWeight = cardRates.reduce((sum, item) => sum + item.rate, 0);
+      let rand = Math.random() * totalWeight;
       let cumulative = 0;
       let drawnCard = CARD_DATABASE[0];
 
-      for (let card of CARD_DATABASE) {
-        cumulative += card.rate;
+      for (let item of cardRates) {
+        cumulative += item.rate;
         if (rand <= cumulative) {
-          drawnCard = card;
+          drawnCard = item.card;
           break;
         }
       }
@@ -1608,6 +1762,165 @@
       }
     }
 
+    function equipCard(cardId, slotType = 'main') {
+      if (slotType === 'main') {
+        equippedCardId = cardId;
+        localStorage.setItem('sq_equipped_card', cardId);
+        if (equippedSubCardId === cardId) {
+          equippedSubCardId = null;
+          localStorage.removeItem('sq_equipped_sub_card');
+        }
+      } else if (slotType === 'sub') {
+        equippedSubCardId = cardId;
+        localStorage.setItem('sq_equipped_sub_card', cardId);
+        if (equippedCardId === cardId) {
+          equippedCardId = null;
+          localStorage.removeItem('sq_equipped_card');
+        }
+      }
+      updateMainBuffDisplay();
+      renderDeckList();
+    }
+
+    function openRebirthModal() {
+      renderRebirthExecuteSection();
+      renderRebirthShopSection();
+      document.getElementById('rebirthModal').classList.add('active');
+    }
+
+    function closeRebirthModal() {
+      document.getElementById('rebirthModal').classList.remove('active');
+    }
+
+    function switchRebirthTab(tab) {
+      const tab1 = document.getElementById('rebirthTab1');
+      const tab2 = document.getElementById('rebirthTab2');
+      const secExec = document.getElementById('rebirthSectionExecute');
+      const secShop = document.getElementById('rebirthSectionShop');
+
+      if (tab === 'rebirth') {
+        tab1.classList.add('active');
+        tab2.classList.remove('active');
+        secExec.style.display = 'block';
+        secShop.style.display = 'none';
+        renderRebirthExecuteSection();
+      } else {
+        tab2.classList.add('active');
+        tab1.classList.remove('active');
+        secShop.style.display = 'block';
+        secExec.style.display = 'none';
+        renderRebirthShopSection();
+      }
+    }
+
+    function renderRebirthExecuteSection() {
+      const reqCost = getRebirthCost(rebirthCount);
+      document.getElementById('rebirthCurrentStepText').innerText = `${rebirthCount} 회차`;
+      document.getElementById('rebirthReqCostText').innerText = `${reqCost.toLocaleString()} pt`;
+      document.getElementById('rebirthOwnedCostText').innerText = `${gachaPoints.toLocaleString()} pt`;
+
+      const pct = Math.min(100, Math.round((gachaPoints / reqCost) * 100));
+      document.getElementById('rebirthProgressFill').style.width = `${pct}%`;
+
+      const btn = document.getElementById('executeRebirthBtn');
+      if (btn) {
+        if (gachaPoints >= reqCost) {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.innerText = `🌌 자산 환생 실행 (${reqCost.toLocaleString()} pt 차감, +1 환생pt)`;
+        } else {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.innerText = `가챠 포인트 부족 (${gachaPoints.toLocaleString()} / ${reqCost.toLocaleString()} pt)`;
+        }
+      }
+    }
+
+    function executeRebirth() {
+      const reqCost = getRebirthCost(rebirthCount);
+      if (gachaPoints < reqCost) return;
+
+      gachaPoints -= reqCost;
+      rebirthCount++;
+      rebirthPoints++;
+
+      localStorage.setItem('sq_gacha_points', gachaPoints);
+      localStorage.setItem('sq_rebirth_count', rebirthCount);
+      localStorage.setItem('sq_rebirth_points', rebirthPoints);
+
+      showToast(`🌌 ${rebirthCount}회차 자산 환생 성공! (1 환생pt 획득)`);
+      confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+
+      updateMainRebirthBadge();
+      updateMainBuffDisplay();
+      renderRebirthExecuteSection();
+    }
+
+    function renderRebirthShopSection() {
+      document.getElementById('rebirthShopPointsVal').innerText = `${rebirthPoints} pt`;
+      const container = document.getElementById('rebirthShopContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      REBIRTH_SHOP_ITEMS.forEach(item => {
+        const ownedLvl = rebirthUpgrades[item.id] || 0;
+        const isMax = item.maxBuy > 0 && ownedLvl >= item.maxBuy;
+        const canAfford = rebirthPoints >= item.price;
+
+        const itemEl = document.createElement('div');
+        itemEl.style.cssText = 'background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px; display: flex; justify-content: space-between; align-items: center;';
+
+        itemEl.innerHTML = `
+          <div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 18px;">${item.icon}</span>
+              <strong style="font-size: 14px; color: #1e293b;">${item.name}</strong>
+              ${ownedLvl > 0 ? `<span style="font-size: 11px; background: #e9d5ff; color: #7e22ce; padding: 1px 6px; border-radius: 8px; font-weight: bold;">구매 ${ownedLvl}회</span>` : ''}
+            </div>
+            <div style="font-size: 12px; color: #64748b; margin-top: 4px;">${item.desc}</div>
+          </div>
+          <div>
+            ${isMax ?
+              '<span style="font-size: 12px; font-weight: bold; color: #b45309; background: #fef3c7; padding: 4px 8px; border-radius: 6px;">구매 완료 (MAX)</span>' :
+              `<button onclick="buyRebirthShopItem('${item.id}')" style="padding: 7px 12px; font-size: 12px; font-weight: bold; background: ${canAfford ? 'linear-gradient(135deg, #a855f7, #7e22ce)' : '#cbd5e1'}; color: white; border: none; border-radius: 6px; cursor: ${canAfford ? 'pointer' : 'not-allowed'}; box-shadow: ${canAfford ? '0 2px 6px rgba(168, 85, 247, 0.3)' : 'none'};" ${canAfford ? '' : 'disabled'}>${item.price} pt 구매</button>`
+            }
+          </div>
+        `;
+        container.appendChild(itemEl);
+      });
+    }
+
+    function buyRebirthShopItem(itemId) {
+      const item = REBIRTH_SHOP_ITEMS.find(i => i.id === itemId);
+      if (!item) return;
+
+      const ownedLvl = rebirthUpgrades[item.id] || 0;
+      if (item.maxBuy > 0 && ownedLvl >= item.maxBuy) return;
+      if (rebirthPoints < item.price) return;
+
+      rebirthPoints -= item.price;
+      rebirthUpgrades[item.id] = ownedLvl + 1;
+
+      localStorage.setItem('sq_rebirth_points', rebirthPoints);
+      localStorage.setItem('sq_rebirth_upgrades', JSON.stringify(rebirthUpgrades));
+
+      if (item.type === 'grant_card' && item.cardId) {
+        if (!myCards.includes(item.cardId)) {
+          myCards.push(item.cardId);
+          localStorage.setItem('sq_my_cards', JSON.stringify(myCards));
+        }
+        cardCounts[item.cardId] = (cardCounts[item.cardId] || 0) + 1;
+        localStorage.setItem('sq_card_counts', JSON.stringify(cardCounts));
+      }
+
+      showToast(`🛒 [${item.name}] 구매 완료!`);
+      confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
+
+      updateMainRebirthBadge();
+      updateMainBuffDisplay();
+      renderRebirthShopSection();
+    }
+
     function renderDeckList() {
       const container = document.getElementById('deckListContainer');
       container.innerHTML = '';
@@ -1636,9 +1949,12 @@
         return;
       }
 
+      const isDualSlotUnlocked = (rebirthUpgrades['reb_slot'] || 0) > 0;
+
       filteredCards.forEach(card => {
         const isOwned = myCards.includes(card.id);
-        const isEquipped = (equippedCardId === card.id);
+        const isEquippedMain = (equippedCardId === card.id);
+        const isEquippedSub = (equippedSubCardId === card.id);
         const count = getCardCount(card.id);
         const level = getCardStarLevel(card.id);
         const starsHtml = renderStarsHtml(level);
