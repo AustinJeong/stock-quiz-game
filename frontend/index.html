@@ -9,6 +9,7 @@
   <style>
     :root {
       --primary: #2563eb;
+      --primary-hover: #1d4ed8;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #1e293b;
@@ -213,7 +214,7 @@
       display: none;
     }
 
-    .next-btn {
+    .next-btn, .primary-btn {
       width: 100%;
       margin-top: 20px;
       padding: 14px;
@@ -224,7 +225,30 @@
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
-      display: none;
+      transition: background-color 0.2s;
+    }
+
+    .primary-btn:hover, .next-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .secondary-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .secondary-btn:hover {
+      background: #e2e8f0;
+      color: #1e293b;
     }
 
     .loading-screen {
@@ -246,18 +270,186 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    /* 메인 로비 UI */
+    .start-lobby {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .lobby-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .lobby-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 0 0 8px 0;
+      color: var(--text);
+    }
+
+    .lobby-desc {
+      font-size: 14px;
+      color: #64748b;
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .rules-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: left;
+      margin-bottom: 24px;
+    }
+
+    .rules-card h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #334155;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rules-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 13px;
+      color: #475569;
+    }
+
+    .rules-list li {
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rules-list li:last-child {
+      margin-bottom: 0;
+    }
+
+    .high-score-box {
+      background: #fef3c7;
+      border: 1px solid #fde68a;
+      color: #92400e;
+      border-radius: 10px;
+      padding: 12px;
+      font-weight: bold;
+      font-size: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* 카운트다운 오버레이 */
+    .countdown-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+
+    .countdown-num {
+      font-size: 80px;
+      font-weight: 900;
+      color: var(--primary);
+      animation: popIn 0.5s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.3); opacity: 0; }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* 결과 모달 */
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.65);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      padding: 20px;
+      box-sizing: border-box;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-card {
+      background: white;
+      width: 100%;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      animation: modalUp 0.3s ease-out;
+    }
+
+    @keyframes modalUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .new-record-tag {
+      display: inline-block;
+      background: #ef4444;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      animation: pulse 1s infinite;
+    }
+
+    .modal-score {
+      font-size: 32px;
+      font-weight: 900;
+      color: var(--primary);
+      margin: 10px 0 20px;
+    }
   </style>
 </head>
 <body>
 
   <div class="container" id="gameContainer">
+    <!-- 헤더 -->
     <div class="header">
       <h2 style="margin: 0; font-size: 20px;">📈 주식 지식 퀴즈</h2>
       <div id="comboBadge" class="combo-badge">🔥 2 Combo!</div>
     </div>
 
-    <!-- 대시보드 상태바 -->
-    <div class="status-bar">
+    <!-- 대시보드 상태바 (퀴즈 진행 시에만 노출) -->
+    <div class="status-bar" id="statusBar" style="display: none;">
       <div class="hearts" id="heartsDisplay">❤️❤️❤️</div>
       <div id="scoreDisplay">점수: 0</div>
     </div>
@@ -269,7 +461,39 @@
       <p style="font-size: 12px; color: #94a3b8;">무료 서버 특성상 첫 접속 시 30~50초 정도 소요될 수 있습니다.</p>
     </div>
 
-    <!-- 2. 퀴즈 본문 화면 -->
+    <!-- 2. 메인 로비 화면 (대기 화면) -->
+    <div id="startLobby" class="start-lobby" style="display: none;">
+      <div class="lobby-badge">🏆 주식 퀴즈 챌린지</div>
+      <h1 class="lobby-title">주식 지식 왕 도전하기</h1>
+      <p class="lobby-desc">퀴즈를 풀며 주식 지식도 넓히고<br>최고 점수 기록에 도전해보세요!</p>
+
+      <!-- 최고 점수 표시 -->
+      <div class="high-score-box">
+        <span>🎖️ 역대 최고 기록</span>
+        <span id="lobbyHighScore">0점</span>
+      </div>
+
+      <!-- 게임 규칙 안내 카드 -->
+      <div class="rules-card">
+        <h4>📋 게임 규칙 & 팁</h4>
+        <ul class="rules-list">
+          <li>⏱️ <strong>문제당 10초</strong>의 제한시간이 부여됩니다.</li>
+          <li>❤️ 틀리거나 시간 초과 시 <strong>하트(목숨 3개)</strong>가 차감됩니다.</li>
+          <li>🔥 <strong>연속 정답(콤보)</strong> 및 빠른 정답 제출 시 추가 보너스 점수!</li>
+          <li>☯️ 위기 상황 시 <strong>50:50 찬스</strong> 및 <strong>+5초 추가 찬스</strong> 활용!</li>
+        </ul>
+      </div>
+
+      <button class="primary-btn" onclick="startCountdown()">🎮 게임 시작하기</button>
+    </div>
+
+    <!-- 3. 시작 3초 카운트다운 오버레이 -->
+    <div id="countdownOverlay" class="countdown-overlay">
+      <div class="countdown-num" id="countdownNum">3</div>
+      <p style="font-weight: bold; color: #475569; margin-top: 16px;">곧 퀴즈가 시작됩니다!</p>
+    </div>
+
+    <!-- 4. 퀴즈 본문 화면 -->
     <div id="quizCard" class="quiz-card">
       <!-- 실시간 타이머 바 -->
       <div class="timer-container">
@@ -294,6 +518,21 @@
       <div id="explanationBox" class="explanation-box"></div>
 
       <button id="nextBtn" class="next-btn" onclick="nextQuestion()">다음 문제 ▶</button>
+    </div>
+
+    <!-- 5. 결과 모달 (게임오버 / 세트 클리어) -->
+    <div id="resultModal" class="modal-overlay">
+      <div class="modal-card">
+        <div class="modal-icon" id="modalIcon">🎉</div>
+        <div id="newRecordTag" class="new-record-tag" style="display: none;">🏆 NEW HIGH SCORE!</div>
+        <h3 id="modalTitle" style="margin: 6px 0; font-size: 22px;">게임 종료!</h3>
+        <p id="modalDesc" style="color: #64748b; font-size: 14px; margin: 4px 0 16px;">수고하셨습니다.</p>
+        
+        <div class="modal-score" id="modalScore">0점</div>
+        
+        <button class="primary-btn" onclick="restartGameSession()">🔄 다시 도전하기</button>
+        <button class="secondary-btn" onclick="showLobby()">🏠 메인 로비로 이동</button>
+      </div>
     </div>
 
     <!-- 하단 푸터 -->
@@ -325,8 +564,19 @@
     let used5050 = false;
     let usedAddTime = false;
 
+    // 최고 점수 불러오기 & 업뎃
+    function getHighScore() {
+      return parseInt(localStorage.getItem('stock_quiz_high_score') || '0', 10);
+    }
+
+    function updateHighScoreUI() {
+      const highScore = getHighScore();
+      document.getElementById('lobbyHighScore').innerText = `${highScore.toLocaleString()}점`;
+    }
+
     // 초기화 및 데이터 수집
     async function initGame() {
+      updateHighScoreUI();
       try {
         const response = await fetch(`${API_BASE_URL}/api/quizzes`);
         if (!response.ok) throw new Error('서버 응답 오류');
@@ -334,14 +584,62 @@
         quizzes = await response.json();
         
         document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('quizCard').classList.add('active');
-        
-        resetGameVariables();
-        renderQuiz();
+        showLobby();
       } catch (error) {
         console.error('API 연결 실패:', error);
         document.getElementById('loadingText').innerText = '서버 연결에 실패했습니다. 페이지를 새로고침해 주세요.';
       }
+    }
+
+    // 로비 화면 표출
+    function showLobby() {
+      clearInterval(timerInterval);
+      updateHighScoreUI();
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('quizCard').classList.remove('active');
+      document.getElementById('statusBar').style.display = 'none';
+      document.getElementById('resultModal').style.display = 'none';
+      document.getElementById('countdownOverlay').style.display = 'none';
+      document.getElementById('startLobby').style.display = 'block';
+    }
+
+    // 3초 카운트다운 후 시작
+    function startCountdown() {
+      document.getElementById('startLobby').style.display = 'none';
+      const overlay = document.getElementById('countdownOverlay');
+      const numEl = document.getElementById('countdownNum');
+      overlay.style.display = 'flex';
+
+      let count = 3;
+      numEl.innerText = count;
+
+      const countdownTimer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          numEl.innerText = count;
+          // 애니메이션 리셋
+          numEl.style.animation = 'none';
+          numEl.offsetHeight; // reflow
+          numEl.style.animation = 'popIn 0.5s ease-out';
+        } else if (count === 0) {
+          numEl.innerText = 'START!';
+          numEl.style.animation = 'none';
+          numEl.offsetHeight;
+          numEl.style.animation = 'popIn 0.5s ease-out';
+        } else {
+          clearInterval(countdownTimer);
+          overlay.style.display = 'none';
+          beginQuizGame();
+        }
+      }, 800);
+    }
+
+    // 카운트다운 후 본격 게임 시작
+    function beginQuizGame() {
+      document.getElementById('statusBar').style.display = 'flex';
+      document.getElementById('quizCard').classList.add('active');
+      resetGameVariables();
+      renderQuiz();
     }
 
     // 게임 변수 초기화
@@ -420,8 +718,6 @@
       const buttons = document.querySelectorAll('.option-btn');
       buttons.forEach(btn => btn.disabled = true);
 
-      // 정답 백엔드 검증 없이 알림 및 처리
-      const q = quizzes[currentIndex];
       submitAnswer(-1, null, true); // -1은 시간 초과
     }
 
@@ -518,9 +814,8 @@
           document.getElementById('nextBtn').style.display = 'block';
         } else {
           setTimeout(() => {
-            alert(`💔 하트가 모두 소진되었습니다!\n최종 점수: ${totalScore}점`);
-            restartGameSession();
-          }, 500);
+            finishGame(false);
+          }, 800);
         }
 
       } catch (err) {
@@ -533,7 +828,6 @@
       if (used5050) return;
       
       const q = quizzes[currentIndex];
-      // 서버에서 정답 인덱스 확인
       try {
         const res = await fetch(`${API_BASE_URL}/api/quiz/verify`, {
           method: 'POST',
@@ -576,17 +870,56 @@
       if (currentIndex < quizzes.length) {
         renderQuiz();
       } else {
-        alert(`🎉 퀴즈 세트 클리어!\n최종 점수: ${totalScore}점`);
-        restartGameSession();
+        finishGame(true);
       }
     }
 
-    // 새 판 시작
+    // 게임 종료 (결과 모달 표출 및 최고 기록 체크)
+    function finishGame(isCleared) {
+      clearInterval(timerInterval);
+
+      const oldHighScore = getHighScore();
+      let isNewRecord = false;
+
+      if (totalScore > oldHighScore) {
+        localStorage.setItem('stock_quiz_high_score', totalScore.toString());
+        isNewRecord = true;
+      }
+
+      const modalIcon = document.getElementById('modalIcon');
+      const modalTitle = document.getElementById('modalTitle');
+      const modalDesc = document.getElementById('modalDesc');
+      const modalScore = document.getElementById('modalScore');
+      const newRecordTag = document.getElementById('newRecordTag');
+
+      modalScore.innerText = `${totalScore.toLocaleString()}점`;
+      newRecordTag.style.display = isNewRecord ? 'inline-block' : 'none';
+
+      if (isCleared) {
+        modalIcon.innerText = '🏆';
+        modalTitle.innerText = '퀴즈 세트 전원 클리어!';
+        modalDesc.innerText = '축하합니다! 대단한 주식 지식을 보유하고 계시는군요!';
+      } else {
+        modalIcon.innerText = '💔';
+        modalTitle.innerText = '게임 종료!';
+        modalDesc.innerText = '하트가 모두 소진되었습니다. 다음 기회에 도전하세요!';
+      }
+
+      if (isNewRecord || isCleared) {
+        confetti({
+          particleCount: 100,
+          spread: 80,
+          origin: { y: 0.6 }
+        });
+      }
+
+      document.getElementById('resultModal').style.display = 'flex';
+    }
+
+    // 게임 다시 하기 (바로 3초 카운트다운 후 시작)
     function restartGameSession() {
-      document.getElementById('quizCard').classList.remove('active');
-      document.getElementById('loadingScreen').style.display = 'block';
-      document.getElementById('loadingText').innerText = '새로운 퀴즈 세트를 불러오는 중입니다...';
-      initGame();
+      document.getElementById('resultModal').style.display = 'none';
+      startCountdown();
     }
 
     initGame();
