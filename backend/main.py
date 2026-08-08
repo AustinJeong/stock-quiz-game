@@ -53,7 +53,7 @@ def health_check():
     return {"status": "ok", "total_quizzes": len(QUIZ_DATABASE)}
 
 @app.get("/api/quizzes")
-def get_random_quizzes(count: int = 5):
+def get_random_quizzes(count: int = 10):
     """100문제 중 무작위로 count개(기본 5개)를 무작위 선택하여 반환"""
     if not QUIZ_DATABASE:
         return []
