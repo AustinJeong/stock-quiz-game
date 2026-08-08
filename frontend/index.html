@@ -716,6 +716,80 @@
     </div>
   </div>
 
+  <!-- 7. 퀴즈 세트 결산 리포트 모달 -->
+  <div class="modal-overlay" id="settlementModal">
+    <div class="modal-card" style="max-width: 440px; text-align: center;">
+      <h2 id="settlementTitle" style="margin: 0 0 12px 0; font-size: 20px;">🎉 퀴즈 세트 결산 리포트</h2>
+      
+      <!-- 총점 요약 카드 -->
+      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 13px; color: #1e40af; font-weight: bold;">최종 획득 점수 및 가챠 포인트</div>
+        <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 8px;">
+          <div>
+            <span style="font-size: 24px; font-weight: bold; color: #2563eb;" id="settlementTotalScore">0</span>
+            <span style="font-size: 13px; color: #1e40af;"> 점</span>
+          </div>
+          <div style="border-left: 1px solid #93c5fd; height: 30px;"></div>
+          <div>
+            <span style="font-size: 24px; font-weight: bold; color: #6d28d9;" id="settlementTotalGacha">+0</span>
+            <span style="font-size: 13px; color: #6d28d9;"> pt</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 점수 계산 상세 내역 -->
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 14px; margin-bottom: 14px; text-align: left;">
+        <div style="font-size: 14px; font-weight: bold; color: #1e293b; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+          📈 점수 상세 계산 내역
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+          <span style="color: #475569;">• 기본 획득 점수 (퀴즈/속도/기본콤보):</span>
+          <strong id="settlementBaseScore">0점</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+          <span style="color: #2563eb;" id="settlementCardScoreLabel">• 🎴 장착 카드 효과 보너스:</span>
+          <strong style="color: #2563eb;" id="settlementCardScoreVal">+0점</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+          <span style="color: #d97706;">• 🏆 달성과제 패시브 보너스:</span>
+          <strong style="color: #d97706;" id="settlementAchScoreVal">+0점</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 4px;">
+          <span>= 최종 합계 점수:</span>
+          <span style="color: #2563eb;" id="settlementFinalScoreSum">0점</span>
+        </div>
+      </div>
+
+      <!-- 가챠 포인트 계산 상세 내역 -->
+      <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: left;">
+        <div style="font-size: 14px; font-weight: bold; color: #6d28d9; margin-bottom: 8px; border-bottom: 1px solid #ede9fe; padding-bottom: 6px;">
+          🎰 가챠 포인트 상세 계산 내역
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+          <span style="color: #475569;">• 점수 환산 포인트 (점수 ÷ 100):</span>
+          <strong id="settlementScoreGachaVal">+0 pt</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+          <span style="color: #6d28d9;" id="settlementCardGachaLabel">• 🎴 장착 카드 정답 추가 포인트:</span>
+          <strong style="color: #6d28d9;" id="settlementCardGachaVal">+0 pt</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+          <span style="color: #d97706;">• 🏆 달성과제 패시브 추가 포인트:</span>
+          <strong style="color: #d97706;" id="settlementAchGachaVal">+0 pt</strong>
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; border-top: 1px dashed #ddd6fe; padding-top: 6px; margin-top: 4px;">
+          <span>= 총 획득 가챠 포인트:</span>
+          <span style="color: #6d28d9;" id="settlementFinalGachaSum">+0 pt</span>
+        </div>
+      </div>
+
+      <button onclick="closeSettlementModal()"
+        style="width: 100%; padding: 14px; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">
+        🚀 확인 (메인 화면으로)
+      </button>
+    </div>
+  </div>
+
   <script>
     const API_BASE_URL = 'https://stock-quiz-game.onrender.com';
 
@@ -733,6 +807,13 @@
     let lives = 3;
     let shieldCount = 0;
     let combo = 0;
+
+    // 세션별 점수/포인트 상세 내역 집계 변수
+    let sessionBasePoints = 0;
+    let sessionCardScoreBonus = 0;
+    let sessionAchScoreBonus = 0;
+    let sessionCardGachaPts = 0;
+    let sessionAchGachaPts = 0;
 
     let baseTimeLimit = 10;
     let timeLeft = 10;
@@ -891,6 +972,13 @@
       used5050 = false;
       usedAddTime = false;
 
+      // 세션 집계 초기화
+      sessionBasePoints = 0;
+      sessionCardScoreBonus = 0;
+      sessionAchScoreBonus = 0;
+      sessionCardGachaPts = 0;
+      sessionAchGachaPts = 0;
+
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
       const achBuffs = getAchievementBuffs();
 
@@ -1025,36 +1113,45 @@
 
           const speedBonus = Math.floor(timeLeft * 10);
           const achBuffs = getAchievementBuffs();
-          let comboBonus = combo > 1 ? combo * 20 : 0;
-
           const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-          let extraComboVal = achBuffs.comboBuff;
+
+          // 콤보 분해
+          const baseComboBonus = combo > 1 ? combo * 20 : 0;
+          let cardComboBonus = 0;
           if (card && card.effectType === 'combo_bonus') {
-            extraComboVal += card.value;
+            cardComboBonus = Math.floor(combo * card.value);
           }
-          if (extraComboVal > 0) {
-            comboBonus += Math.floor(combo * extraComboVal);
-          }
+          const achComboBonus = achBuffs.comboBuff > 0 ? Math.floor(combo * achBuffs.comboBuff) : 0;
 
-          let calculatedPoints = result.points + speedBonus + comboBonus;
+          // 기본점수 (퀴즈 점수 + 속도 보너스 + 기본 콤보)
+          const baseQPoints = result.points + speedBonus + baseComboBonus;
 
-          let scoreMultiplier = 1 + achBuffs.scoreBuff;
+          // 배율 분해
+          let cardScoreRate = 0;
           if (card && (card.effectType === 'score' || card.effectType === 'all_buff')) {
-            scoreMultiplier += card.value;
+            cardScoreRate = card.value;
           }
-          calculatedPoints = Math.floor(calculatedPoints * scoreMultiplier);
+          const achScoreRate = achBuffs.scoreBuff;
+
+          // 세부 분해 계산
+          const qBaseContribution = baseQPoints;
+          const qCardContribution = cardComboBonus + Math.floor(baseQPoints * cardScoreRate);
+          const qAchContribution = achComboBonus + Math.floor(baseQPoints * achScoreRate);
+          const calculatedPoints = qBaseContribution + qCardContribution + qAchContribution;
+
+          sessionBasePoints += qBaseContribution;
+          sessionCardScoreBonus += qCardContribution;
+          sessionAchScoreBonus += qAchContribution;
 
           totalScore += calculatedPoints;
           document.getElementById('scoreDisplay').innerText = `점수: ${totalScore}`;
 
-          let extraGachaPt = achBuffs.gachaPointBuff;
-          if (card && card.effectType === 'gacha_point') {
-            extraGachaPt += card.value;
-          }
-          if (extraGachaPt > 0) {
-            gachaPoints += extraGachaPt;
-            localStorage.setItem('sq_gacha_points', gachaPoints);
-          }
+          // 가챠 포인트 분해 (정답 시 추가 획득)
+          let cardGachaAdd = (card && card.effectType === 'gacha_point') ? card.value : 0;
+          let achGachaAdd = achBuffs.gachaPointBuff;
+
+          sessionCardGachaPts += cardGachaAdd;
+          sessionAchGachaPts += achGachaAdd;
 
           confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
 
@@ -1137,14 +1234,41 @@
       }
     }
 
-    // ★ 퀴즈 세트 정산 (점수 1/100을 가챠 포인트로 전환 및 저장)
+    // ★ 퀴즈 세트 정산 (결산 모달 및 상세 내역 표출)
     function finishGameSession(messageTitle) {
-      const earnedGachaPts = Math.floor(totalScore / 100);
-      gachaPoints += earnedGachaPts;
+      const card = CARD_DATABASE.find(c => c.id === equippedCardId);
+      const cardName = card ? card.name : '없음';
+
+      const scoreGachaPts = Math.floor(totalScore / 100);
+      const totalEarnedGachaPts = scoreGachaPts + sessionCardGachaPts + sessionAchGachaPts;
+
+      gachaPoints += totalEarnedGachaPts;
       localStorage.setItem('sq_gacha_points', gachaPoints);
 
-      alert(`${messageTitle}\n• 최종 점수: ${totalScore}점\n• 획득 가챠 포인트: +${earnedGachaPts} pt (총 ${gachaPoints} pt)`);
+      // 결산 모달 정보 업데이트
+      document.getElementById('settlementTitle').innerText = messageTitle;
+      document.getElementById('settlementTotalScore').innerText = totalScore.toLocaleString();
+      document.getElementById('settlementTotalGacha').innerText = `+${totalEarnedGachaPts}`;
 
+      // 점수 세부 내역
+      document.getElementById('settlementBaseScore').innerText = `${sessionBasePoints.toLocaleString()}점`;
+      document.getElementById('settlementCardScoreLabel').innerText = `• 🎴 장착 카드 [${cardName}] 효과 보너스:`;
+      document.getElementById('settlementCardScoreVal').innerText = `+${sessionCardScoreBonus.toLocaleString()}점`;
+      document.getElementById('settlementAchScoreVal').innerText = `+${sessionAchScoreBonus.toLocaleString()}점`;
+      document.getElementById('settlementFinalScoreSum').innerText = `${totalScore.toLocaleString()}점`;
+
+      // 가챠 포인트 세부 내역
+      document.getElementById('settlementScoreGachaVal').innerText = `+${scoreGachaPts} pt`;
+      document.getElementById('settlementCardGachaLabel').innerText = `• 🎴 장착 카드 [${cardName}] 정답 추가:`;
+      document.getElementById('settlementCardGachaVal').innerText = `+${sessionCardGachaPts} pt`;
+      document.getElementById('settlementAchGachaVal').innerText = `+${sessionAchGachaPts} pt`;
+      document.getElementById('settlementFinalGachaSum').innerText = `+${totalEarnedGachaPts} pt`;
+
+      document.getElementById('settlementModal').classList.add('active');
+    }
+
+    function closeSettlementModal() {
+      document.getElementById('settlementModal').classList.remove('active');
       returnToMainScreen();
     }
 
