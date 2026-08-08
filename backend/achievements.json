@@ -261,5 +261,137 @@
       { "effectType": "score", "effectValue": 0.15 }
     ],
     "rewardDesc": "오답 방어 보호막 +1회, 획득 점수 +15%"
+  },
+
+  {
+    "id": "ach_star1_1",
+    "title": "1성 수집가 I",
+    "desc": "1성(★☆☆) 이상 카드 10종 보유",
+    "gradeFilter": "STAR1",
+    "targetCount": 10,
+    "effectType": "score",
+    "effectValue": 0.02,
+    "rewardDesc": "획득 점수 +2%"
+  },
+  {
+    "id": "ach_star1_2",
+    "title": "1성 수집가 II",
+    "desc": "1성(★☆☆) 이상 카드 30종 보유",
+    "gradeFilter": "STAR1",
+    "targetCount": 30,
+    "effectType": "timer",
+    "effectValue": 1,
+    "rewardDesc": "제한시간 +1초"
+  },
+  {
+    "id": "ach_star1_3",
+    "title": "1성 수집가 III",
+    "desc": "1성(★☆☆) 이상 카드 60종 보유",
+    "gradeFilter": "STAR1",
+    "targetCount": 60,
+    "effectType": "combo_bonus",
+    "effectValue": 15,
+    "rewardDesc": "콤보당 점수 +15점"
+  },
+  {
+    "id": "ach_star1_4",
+    "title": "1성 완전 정복",
+    "desc": "1성(★☆☆) 이상 카드 90종 올클리어",
+    "gradeFilter": "STAR1",
+    "targetCount": 90,
+    "effects": [
+      { "effectType": "score", "effectValue": 0.03 },
+      { "effectType": "gacha_point", "effectValue": 1 }
+    ],
+    "rewardDesc": "획득 점수 +3%, 가챠포인트 +1pt"
+  },
+
+  {
+    "id": "ach_star2_1",
+    "title": "2성 수집가 I",
+    "desc": "2성(★★☆) 이상 카드 10종 보유",
+    "gradeFilter": "STAR2",
+    "targetCount": 10,
+    "effectType": "score",
+    "effectValue": 0.04,
+    "rewardDesc": "획득 점수 +4%"
+  },
+  {
+    "id": "ach_star2_2",
+    "title": "2성 수집가 II",
+    "desc": "2성(★★☆) 이상 카드 30종 보유",
+    "gradeFilter": "STAR2",
+    "targetCount": 30,
+    "effectType": "timer",
+    "effectValue": 2,
+    "rewardDesc": "제한시간 +2초"
+  },
+  {
+    "id": "ach_star2_3",
+    "title": "2성 수집가 III",
+    "desc": "2성(★★☆) 이상 카드 60종 보유",
+    "gradeFilter": "STAR2",
+    "targetCount": 60,
+    "effectType": "combo_bonus",
+    "effectValue": 30,
+    "rewardDesc": "콤보당 점수 +30점"
+  },
+  {
+    "id": "ach_star2_4",
+    "title": "2성 완전 정복",
+    "desc": "2성(★★☆) 이상 카드 90종 올클리어",
+    "gradeFilter": "STAR2",
+    "targetCount": 90,
+    "effects": [
+      { "effectType": "heart", "effectValue": 1 },
+      { "effectType": "gacha_point", "effectValue": 2 }
+    ],
+    "rewardDesc": "기본 목숨 +1개, 가챠포인트 +2pt"
+  },
+
+  {
+    "id": "ach_star3_1",
+    "title": "3성 마스터 I",
+    "desc": "3성(★★★) 카드 10종 보유",
+    "gradeFilter": "STAR3",
+    "targetCount": 10,
+    "effectType": "score",
+    "effectValue": 0.06,
+    "rewardDesc": "획득 점수 +6%"
+  },
+  {
+    "id": "ach_star3_2",
+    "title": "3성 마스터 II",
+    "desc": "3성(★★★) 카드 30종 보유",
+    "gradeFilter": "STAR3",
+    "targetCount": 30,
+    "effectType": "timer",
+    "effectValue": 3,
+    "rewardDesc": "제한시간 +3초"
+  },
+  {
+    "id": "ach_star3_3",
+    "title": "3성 마스터 III",
+    "desc": "3성(★★★) 카드 60종 보유",
+    "gradeFilter": "STAR3",
+    "targetCount": 60,
+    "effects": [
+      { "effectType": "shield", "effectValue": 1 },
+      { "effectType": "combo_bonus", "effectValue": 50 }
+    ],
+    "rewardDesc": "오답 방어 보호막 +1회, 콤보당 점수 +50점"
+  },
+  {
+    "id": "ach_star3_4",
+    "title": "3성 완전 정복 (신화)",
+    "desc": "3성(★★★) 카드 90종 올클리어",
+    "gradeFilter": "STAR3",
+    "targetCount": 90,
+    "effects": [
+      { "effectType": "score", "effectValue": 0.15 },
+      { "effectType": "heart", "effectValue": 1 },
+      { "effectType": "timer", "effectValue": 3 }
+    ],
+    "rewardDesc": "획득 점수 +15%, 기본 목숨 +1개, 제한시간 +3초"
   }
 ]

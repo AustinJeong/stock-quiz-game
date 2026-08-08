@@ -163,12 +163,27 @@
     }
 
     @keyframes toastIn {
-      from { opacity: 0; transform: translateY(-20px) scale(0.9); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
+
     @keyframes toastOut {
-      from { opacity: 1; transform: translateY(0) scale(1); }
-      to { opacity: 0; transform: translateY(-20px) scale(0.9); }
+      from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+
+      to {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.9);
+      }
     }
 
     /* 대시보드 상태바 */
@@ -558,7 +573,9 @@
 </head>
 
 <body>
-  <div id="toastContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;"></div>
+  <div id="toastContainer"
+    style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;">
+  </div>
 
   <div class="container" id="gameContainer">
     <!-- 1. 백엔드 연결 로딩 화면 -->
@@ -581,7 +598,7 @@
 
       <!-- 보유 포인트 잔액 표시 -->
       <div class="point-badge-box">
-        <span>🪙 보유 가챠 포인트</span>
+        <span>💎 보유 가챠 포인트</span>
         <span id="mainGachaPoints" style="font-size: 18px;">0 pt</span>
       </div>
 
@@ -607,7 +624,8 @@
         <h3 style="margin: 0; font-size: 18px;">📈 주식 지식 퀴즈</h3>
         <div class="header-btns">
           <button class="deck-btn" onclick="openDeckModal()" style="font-size: 11px; padding: 4px 10px;">🎴 도감</button>
-          <button class="achievement-btn" onclick="openAchievementModal()" style="font-size: 11px; padding: 4px 10px;">🏆 달성과제</button>
+          <button class="achievement-btn" onclick="openAchievementModal()"
+            style="font-size: 11px; padding: 4px 10px;">🏆 달성과제</button>
         </div>
       </div>
 
@@ -679,11 +697,13 @@
   <!-- 5. 내 카드 도감 모달 -->
   <div class="modal-overlay" id="deckModal">
     <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
         <h3 style="margin: 0;">🎴 내 카드 도감</h3>
         <span onclick="closeDeckModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
         <span style="font-size: 13px; color: #64748b;">수집한 카드를 장착하여 버프를 적용하세요.</span>
         <span id="deckHeaderStats" style="font-size: 12px; font-weight: bold; color: #2563eb;">수집률: 0 / 90종</span>
       </div>
@@ -710,11 +730,13 @@
   <!-- 6. 달성과제(업적) 모달 -->
   <div class="modal-overlay" id="achievementModal">
     <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
         <h3 style="margin: 0;">🏆 달성과제 (업적)</h3>
         <span onclick="closeAchievementModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
         <span style="font-size: 13px; color: #64748b;">카드를 수집하여 영구 패시브 보너스를 획득하세요!</span>
         <span id="achievementHeaderStats" style="font-size: 12px; font-weight: bold; color: #d97706;">달성: 0 / 20</span>
       </div>
@@ -730,9 +752,10 @@
   <div class="modal-overlay" id="settlementModal">
     <div class="modal-card" style="max-width: 440px; text-align: center;">
       <h2 id="settlementTitle" style="margin: 0 0 12px 0; font-size: 20px;">🎉 퀴즈 세트 결산 리포트</h2>
-      
+
       <!-- 총점 요약 카드 -->
-      <div style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+      <div
+        style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
         <div style="font-size: 13px; color: #1e40af; font-weight: bold;">최종 획득 점수 및 가챠 포인트</div>
         <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 8px;">
           <div>
@@ -748,8 +771,10 @@
       </div>
 
       <!-- 점수 계산 상세 내역 -->
-      <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 14px; margin-bottom: 14px; text-align: left;">
-        <div style="font-size: 14px; font-weight: bold; color: #1e293b; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
+      <div
+        style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 14px; margin-bottom: 14px; text-align: left;">
+        <div
+          style="font-size: 14px; font-weight: bold; color: #1e293b; margin-bottom: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px;">
           📈 점수 상세 계산 내역
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
@@ -764,15 +789,18 @@
           <span style="color: #d97706;">• 🏆 달성과제 패시브 보너스:</span>
           <strong style="color: #d97706;" id="settlementAchScoreVal">+0점</strong>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 4px;">
+        <div
+          style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 4px;">
           <span>= 최종 합계 점수:</span>
           <span style="color: #2563eb;" id="settlementFinalScoreSum">0점</span>
         </div>
       </div>
 
       <!-- 가챠 포인트 계산 상세 내역 -->
-      <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: left;">
-        <div style="font-size: 14px; font-weight: bold; color: #6d28d9; margin-bottom: 8px; border-bottom: 1px solid #ede9fe; padding-bottom: 6px;">
+      <div
+        style="background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 12px; padding: 14px; margin-bottom: 16px; text-align: left;">
+        <div
+          style="font-size: 14px; font-weight: bold; color: #6d28d9; margin-bottom: 8px; border-bottom: 1px solid #ede9fe; padding-bottom: 6px;">
           🎰 가챠 포인트 상세 계산 내역
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
@@ -787,7 +815,8 @@
           <span style="color: #d97706;">• 🏆 달성과제 패시브 추가 포인트:</span>
           <strong style="color: #d97706;" id="settlementAchGachaVal">+0 pt</strong>
         </div>
-        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; border-top: 1px dashed #ddd6fe; padding-top: 6px; margin-top: 4px;">
+        <div
+          style="display: flex; justify-content: space-between; font-size: 14px; font-weight: bold; border-top: 1px dashed #ddd6fe; padding-top: 6px; margin-top: 4px;">
           <span>= 총 획득 가챠 포인트:</span>
           <span style="color: #6d28d9;" id="settlementFinalGachaSum">+0 pt</span>
         </div>
@@ -934,6 +963,15 @@
     function getAchievementProgress(ach) {
       if (ach.gradeFilter === 'ANSWERS') {
         return totalCorrectAnswers;
+      }
+      if (ach.gradeFilter === 'STAR1') {
+        return CARD_DATABASE.filter(c => myCards.includes(c.id) && getCardStarLevel(c.id) >= 1).length;
+      }
+      if (ach.gradeFilter === 'STAR2') {
+        return CARD_DATABASE.filter(c => myCards.includes(c.id) && getCardStarLevel(c.id) >= 2).length;
+      }
+      if (ach.gradeFilter === 'STAR3') {
+        return CARD_DATABASE.filter(c => myCards.includes(c.id) && getCardStarLevel(c.id) >= 3).length;
       }
       return getOwnedCountByGrade(ach.gradeFilter);
     }
@@ -1548,9 +1586,18 @@
       const count = getCardCount(cardId);
 
       if (count >= reqCount) {
+        const prevCompleted = checkAchievements();
         const nextLevel = level + 1;
         cardLevels[cardId] = nextLevel;
         localStorage.setItem('sq_card_levels', JSON.stringify(cardLevels));
+
+        const newCompleted = checkAchievements();
+        const newlyUnlocked = newCompleted.filter(id => !prevCompleted.includes(id));
+        if (newlyUnlocked.length > 0) {
+          const unlockedTitles = ACHIEVEMENTS.filter(a => newlyUnlocked.includes(a.id)).map(a => a.title).join(', ');
+          showToast(`🏆 달성과제 완료! [${unlockedTitles}]`);
+          confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
+        }
 
         const eff = getEffectiveCardValues(card);
         showToast(`⭐ [${card.name}] ${nextLevel}성 업그레이드 완료! (능력치 x${eff.multiplier})`);
@@ -1712,9 +1759,9 @@
             </div>
             <div>
               ${isCompleted ?
-                '<span style="display: inline-block; padding: 3px 8px; border-radius: 12px; background: #f59e0b; color: white; font-size: 11px; font-weight: bold;">✨ 달성 완료</span>' :
-                `<span style="font-size: 12px; font-weight: bold; color: #64748b;">${currentCount.toLocaleString()} / ${targetCount.toLocaleString()}</span>`
-              }
+            '<span style="display: inline-block; padding: 3px 8px; border-radius: 12px; background: #f59e0b; color: white; font-size: 11px; font-weight: bold;">✨ 달성 완료</span>' :
+            `<span style="font-size: 12px; font-weight: bold; color: #64748b;">${currentCount.toLocaleString()} / ${targetCount.toLocaleString()}</span>`
+          }
             </div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 2px;">
