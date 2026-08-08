@@ -71,7 +71,6 @@
       }
     }
 
-    /* 헤더 및 상단 메뉴 */
     .header {
       display: flex;
       justify-content: space-between;
@@ -83,7 +82,7 @@
       background: #3b82f6;
       color: white;
       border: none;
-      padding: 6px 12px;
+      padding: 8px 14px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: bold;
@@ -123,18 +122,40 @@
       display: none;
     }
 
-    /* 장착 중인 카드 버프 표시 */
-    .buff-bar {
-      background: #e0f2fe;
-      color: #0369a1;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 12px;
+    /* 메인 화면 스티커/버프 표시 */
+    .main-screen {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .start-btn {
+      width: 100%;
+      padding: 16px;
+      font-size: 18px;
       font-weight: bold;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 16px;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
+      transition: transform 0.1s;
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    .buff-card-info {
+      background: #eff6ff;
+      border: 1px dashed #3b82f6;
+      padding: 14px;
+      border-radius: 12px;
+      margin: 16px 0;
+      font-size: 14px;
+      color: #1e40af;
+      text-align: left;
     }
 
     /* 타이머 바 */
@@ -265,7 +286,6 @@
       display: none;
     }
 
-    /* 로딩 화면 */
     .loading-screen {
       text-align: center;
       padding: 40px 10px;
@@ -291,7 +311,7 @@
       }
     }
 
-    /* 모달 팝업 공통 스타일 */
+    /* 모달 팝업 */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -321,11 +341,10 @@
       position: relative;
     }
 
-    /* 가챠 & 도감 카드 스타일 */
     .card-item {
       border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
       border: 2px solid #cbd5e1;
       background: #f8fafc;
       display: flex;
@@ -385,7 +404,7 @@
 
     .gacha-card-anim {
       width: 180px;
-      height: 240px;
+      height: 230px;
       margin: 0 auto 20px;
       border-radius: 16px;
       display: flex;
@@ -413,23 +432,6 @@
 <body>
 
   <div class="container" id="gameContainer">
-    <div class="header">
-      <h2 style="margin: 0; font-size: 20px;">📈 주식 지식 퀴즈</h2>
-      <button class="deck-btn" onclick="openDeckModal()">🎴 내 카드 도감</button>
-    </div>
-
-    <!-- 대시보드 상태바 -->
-    <div class="status-bar">
-      <div class="hearts" id="heartsDisplay">❤️❤️❤️</div>
-      <div id="comboBadge" class="combo-badge">🔥 2 Combo!</div>
-      <div id="scoreDisplay">점수: 0</div>
-    </div>
-
-    <!-- 장착 카드 버프 표시 -->
-    <div class="buff-bar" id="buffBar">
-      <span>🎴 장착 없음 (기본 효과)</span>
-    </div>
-
     <!-- 1. 백엔드 연결 로딩 화면 -->
     <div id="loadingScreen" class="loading-screen">
       <div class="spinner"></div>
@@ -437,8 +439,44 @@
       <p style="font-size: 12px; color: #94a3b8;">무료 서버 특성상 첫 접속 시 30~50초 소요될 수 있습니다.</p>
     </div>
 
-    <!-- 2. 퀴즈 본문 화면 -->
+    <!-- 2. 메인 대기실 화면 (시작 화면) -->
+    <div id="mainScreen" class="main-screen" style="display: none;">
+      <div class="header">
+        <h2 style="margin: 0; font-size: 22px;">📈 주식 지식 퀴즈</h2>
+        <button class="deck-btn" onclick="openDeckModal()">🎴 내 카드 도감</button>
+      </div>
+
+      <p style="color: #64748b; font-size: 14px; margin-top: 6px;">10문제를 풀고 주식 기업 가챠 카드를 수집해 보세요!</p>
+
+      <div class="buff-card-info" id="mainBuffInfo">
+        <strong>🎴 장착 중인 카드:</strong>
+        <div id="mainBuffText" style="margin-top: 4px; font-weight: bold;">로딩 중...</div>
+      </div>
+
+      <div
+        style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 13px; color: #475569; text-align: left; line-height: 1.6;">
+        <b>💡 게임 규칙 안내:</b><br>
+        • 문제당 제한시간 <b>10초</b> (빠르게 맞히면 보너스 점수!)<br>
+        • 하트 <b>3개</b> 제공 (오답 또는 시간 초과 시 감소)<br>
+        • 10문제 완주 시 <b>주식 기업 카드 뽑기권</b> 증정!
+      </div>
+
+      <button class="start-btn" onclick="startGame()">🚀 퀴즈 게임 시작하기</button>
+    </div>
+
+    <!-- 3. 퀴즈 본문 화면 -->
     <div id="quizCard" class="quiz-card">
+      <div class="header">
+        <h3 style="margin: 0; font-size: 18px;">📈 주식 지식 퀴즈</h3>
+        <button class="deck-btn" onclick="openDeckModal()" style="font-size: 11px; padding: 4px 10px;">🎴 도감</button>
+      </div>
+
+      <div class="status-bar">
+        <div class="hearts" id="heartsDisplay">❤️❤️❤️</div>
+        <div id="comboBadge" class="combo-badge">🔥 2 Combo!</div>
+        <div id="scoreDisplay">점수: 0</div>
+      </div>
+
       <div class="timer-container">
         <div id="timerBar" class="timer-bar"></div>
       </div>
@@ -460,7 +498,7 @@
       <button id="nextBtn" class="next-btn" onclick="nextQuestion()">다음 문제 ▶</button>
     </div>
 
-    <!-- 푸터 -->
+    <!-- 하단 푸터 -->
     <footer
       style="margin-top: 30px; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 16px;">
       <p style="margin: 0 0 6px 0;">© 2026 주식 지식 퀴즈 게임. All rights reserved.</p>
@@ -472,14 +510,14 @@
     </footer>
   </div>
 
-  <!-- 3. 가챠(카드 뽑기) 모달 -->
+  <!-- 4. 가챠 모달 -->
   <div class="modal-overlay" id="gachaModal">
     <div class="modal-card gacha-box">
       <h3 style="margin-top: 0;">🎉 10문제 완주 축하합니다!</h3>
       <p style="font-size: 14px; color: #64748b;">주식 기업 가챠 카드 1회 뽑기권을 획득했습니다.</p>
 
       <div id="gachaResultContainer"
-        style="min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        style="min-height: 230px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
         <button onclick="drawGachaCard()"
           style="padding: 16px 32px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 12px; cursor: pointer;">
           🎴 카드 뽑기 실행!
@@ -487,12 +525,12 @@
       </div>
 
       <button onclick="closeGachaModal()"
-        style="width: 100%; margin-top: 16px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">닫기
-        및 다음 판 시작</button>
+        style="width: 100%; margin-top: 16px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">메인
+        화면으로 돌아가기</button>
     </div>
   </div>
 
-  <!-- 4. 내 카드 도감 모달 -->
+  <!-- 5. 내 카드 도감 모달 -->
   <div class="modal-overlay" id="deckModal">
     <div class="modal-card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -511,7 +549,7 @@
   <script>
     const API_BASE_URL = 'https://stock-quiz-game.onrender.com';
 
-    // 🎴 카드 마스터 데이터베이스
+    // 카드 마스터 데이터
     const CARD_DATABASE = [
       { id: 'c1', name: '페니스톡 동전주', grade: 'C', rate: 45, effectType: 'score', value: 0.05, desc: '획득 점수 +5%' },
       { id: 'c2', name: '잡주 바이오', grade: 'C', rate: 25, effectType: 'timer', value: 1, desc: '제한시간 +1초' },
@@ -523,11 +561,9 @@
       { id: 'ssr2', name: '피터 린치', grade: 'SSR', rate: 0.1, effectType: 'heart', value: 1, desc: '기본 목숨 +1개 (하트 4개)' }
     ];
 
-    // 유저 보유 데이터 (localStorage 저장)
-    let myCards = JSON.parse(localStorage.getItem('sq_my_cards')) || ['c1']; // 기본 C등급 카드 1개 제공
+    let myCards = JSON.parse(localStorage.getItem('sq_my_cards')) || ['c1'];
     let equippedCardId = localStorage.getItem('sq_equipped_card') || 'c1';
 
-    // 게임 상태 변수
     let quizzes = [];
     let currentIndex = 0;
     let totalScore = 0;
@@ -541,9 +577,9 @@
     let used5050 = false;
     let usedAddTime = false;
 
-    // 게임 시작 및 버프 계산
+    // 1. 서버 초기 연결
     async function initGame() {
-      applyEquippedCardBuff();
+      updateMainBuffDisplay();
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/quizzes?count=10`);
@@ -551,35 +587,41 @@
 
         quizzes = await response.json();
 
+        // 로딩 화면 숨기고 메인 화면 표시
         document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('quizCard').classList.add('active');
-
-        resetGameVariables();
-        renderQuiz();
+        document.getElementById('mainScreen').style.display = 'block';
       } catch (error) {
         console.error('API 연결 실패:', error);
         document.getElementById('loadingText').innerText = '서버 연결에 실패했습니다. 페이지를 새로고침해 주세요.';
       }
     }
 
-    // 장착 카드 버프 적용
-    function applyEquippedCardBuff() {
+    // 메인 화면 버프 상태 업데이트
+    function updateMainBuffDisplay() {
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      const buffBar = document.getElementById('buffBar');
+      const textEl = document.getElementById('mainBuffText');
 
       baseTimeLimit = 10;
 
       if (card) {
-        buffBar.innerHTML = `<span>🎴 [${card.grade}] ${card.name} 장착 중</span><strong>✨ ${card.desc}</strong>`;
+        textEl.innerHTML = `<span class="grade-badge badge-${card.grade}">${card.grade}</span> ${card.name} (${card.desc})`;
         if (card.effectType === 'timer') {
           baseTimeLimit += card.value;
         }
       } else {
-        buffBar.innerHTML = `<span>🎴 장착 없음 (기본 효과)</span>`;
+        textEl.innerText = '장착 중인 카드가 없습니다.';
       }
     }
 
-    // 게임 상태 리셋
+    // 2. 게임 시작 버튼 클릭 시 작동
+    function startGame() {
+      document.getElementById('mainScreen').style.display = 'none';
+      document.getElementById('quizCard').classList.add('active');
+
+      resetGameVariables();
+      renderQuiz();
+    }
+
     function resetGameVariables() {
       currentIndex = 0;
       totalScore = 0;
@@ -706,7 +748,6 @@
           const comboBonus = combo > 1 ? combo * 20 : 0;
           let calculatedPoints = result.points + speedBonus + comboBonus;
 
-          // 점수 증가 카드 버프 반영
           const card = CARD_DATABASE.find(c => c.id === equippedCardId);
           if (card && card.effectType === 'score') {
             calculatedPoints = Math.floor(calculatedPoints * (1 + card.value));
@@ -739,7 +780,7 @@
         } else {
           setTimeout(() => {
             alert(`💔 하트가 모두 소진되었습니다!\n최종 점수: ${totalScore}점`);
-            restartGameSession();
+            returnToMainScreen();
           }, 500);
         }
 
@@ -788,19 +829,18 @@
       if (currentIndex < quizzes.length) {
         renderQuiz();
       } else {
-        // 10문제 완주 시 가챠 모달 오픈
         openGachaModal();
       }
     }
 
-    function restartGameSession() {
+    function returnToMainScreen() {
       document.getElementById('quizCard').classList.remove('active');
       document.getElementById('loadingScreen').style.display = 'block';
-      document.getElementById('loadingText').innerText = '새로운 퀴즈 세트를 불러오는 중입니다...';
+      document.getElementById('loadingText').innerText = '새로운 퀴즈 데이터를 준비 중입니다...';
       initGame();
     }
 
-    // 🎰 가챠(카드 뽑기) 로직
+    // 가챠 모달
     function openGachaModal() {
       document.getElementById('gachaModal').classList.add('active');
       document.getElementById('gachaResultContainer').innerHTML = `
@@ -811,7 +851,6 @@
     }
 
     function drawGachaCard() {
-      // 확률 가중치 기반 무작위 추첨
       const rand = Math.random() * 100;
       let cumulative = 0;
       let drawnCard = CARD_DATABASE[0];
@@ -824,16 +863,13 @@
         }
       }
 
-      // 카드 저장
       if (!myCards.includes(drawnCard.id)) {
         myCards.push(drawnCard.id);
         localStorage.setItem('sq_my_cards', JSON.stringify(myCards));
       }
 
-      // 폭죽 연출
       confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
 
-      // 카드 화면 표출
       document.getElementById('gachaResultContainer').innerHTML = `
         <div class="gacha-card-anim grade-${drawnCard.grade}">
           <span class="grade-badge badge-${drawnCard.grade}">${drawnCard.grade}</span>
@@ -846,10 +882,10 @@
 
     function closeGachaModal() {
       document.getElementById('gachaModal').classList.remove('active');
-      restartGameSession();
+      returnToMainScreen();
     }
 
-    // 🎴 내 카드 도감 모달 로직
+    // 도감 모달
     function openDeckModal() {
       renderDeckList();
       document.getElementById('deckModal').classList.add('active');
@@ -891,7 +927,7 @@
     function equipCard(cardId) {
       equippedCardId = cardId;
       localStorage.setItem('sq_equipped_card', cardId);
-      applyEquippedCardBuff();
+      updateMainBuffDisplay();
       renderDeckList();
     }
 
