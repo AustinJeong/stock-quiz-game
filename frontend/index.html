@@ -1778,18 +1778,28 @@
 
     function equipCard(cardId, slotType = 'main') {
       if (slotType === 'main') {
-        equippedCardId = cardId;
-        localStorage.setItem('sq_equipped_card', cardId);
-        if (equippedSubCardId === cardId) {
-          equippedSubCardId = null;
-          localStorage.removeItem('sq_equipped_sub_card');
-        }
-      } else if (slotType === 'sub') {
-        equippedSubCardId = cardId;
-        localStorage.setItem('sq_equipped_sub_card', cardId);
         if (equippedCardId === cardId) {
           equippedCardId = null;
           localStorage.removeItem('sq_equipped_card');
+        } else {
+          equippedCardId = cardId;
+          localStorage.setItem('sq_equipped_card', cardId);
+          if (equippedSubCardId === cardId) {
+            equippedSubCardId = null;
+            localStorage.removeItem('sq_equipped_sub_card');
+          }
+        }
+      } else if (slotType === 'sub') {
+        if (equippedSubCardId === cardId) {
+          equippedSubCardId = null;
+          localStorage.removeItem('sq_equipped_sub_card');
+        } else {
+          equippedSubCardId = cardId;
+          localStorage.setItem('sq_equipped_sub_card', cardId);
+          if (equippedCardId === cardId) {
+            equippedCardId = null;
+            localStorage.removeItem('sq_equipped_card');
+          }
         }
       }
       updateMainBuffDisplay();
@@ -1994,9 +2004,25 @@
             upgradeBtnHtml = `<span style="font-size: 11px; font-weight: bold; color: #b45309; background: #fef3c7; border: 1px solid #f59e0b; padding: 3px 6px; border-radius: 6px; margin-right: 6px;">★ MAX</span>`;
           }
 
-          const equipBtnHtml = isEquipped ?
-            '<span style="font-size: 12px; font-weight: bold; color: #2563eb;">[장착 중]</span>' :
-            `<button onclick="equipCard('${card.id}')" style="padding: 6px 12px; font-size: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">장착</button>`;
+          let equipBtnHtml = '';
+          if (isDualSlotUnlocked) {
+            if (isEquippedMain) {
+              equipBtnHtml = `<button onclick="equipCard('${card.id}', 'main')" style="padding: 5px 10px; font-size: 11px; font-weight: bold; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">주 장착 중 (해제)</button>`;
+            } else if (isEquippedSub) {
+              equipBtnHtml = `<button onclick="equipCard('${card.id}', 'sub')" style="padding: 5px 10px; font-size: 11px; font-weight: bold; background: #7c3aed; color: white; border: none; border-radius: 6px; cursor: pointer;">보조 장착 중 (해제)</button>`;
+            } else {
+              equipBtnHtml = `
+                <button onclick="equipCard('${card.id}', 'main')" style="padding: 5px 8px; font-size: 11px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer; margin-right: 4px;">주 장착</button>
+                <button onclick="equipCard('${card.id}', 'sub')" style="padding: 5px 8px; font-size: 11px; background: #7c3aed; color: white; border: none; border-radius: 6px; cursor: pointer;">보조 장착</button>
+              `;
+            }
+          } else {
+            if (isEquippedMain) {
+              equipBtnHtml = `<button onclick="equipCard('${card.id}', 'main')" style="padding: 5px 10px; font-size: 11px; font-weight: bold; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">장착 중 (해제)</button>`;
+            } else {
+              equipBtnHtml = `<button onclick="equipCard('${card.id}', 'main')" style="padding: 6px 12px; font-size: 12px; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">장착</button>`;
+            }
+          }
 
           actionHtml = `<div style="display: flex; align-items: center;">${upgradeBtnHtml}${equipBtnHtml}</div>`;
         }
@@ -2015,13 +2041,6 @@
         `;
         container.appendChild(cardEl);
       });
-    }
-
-    function equipCard(cardId) {
-      equippedCardId = cardId;
-      localStorage.setItem('sq_equipped_card', cardId);
-      updateMainBuffDisplay();
-      renderDeckList();
     }
 
     // 🏆 달성과제 모달
