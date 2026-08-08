@@ -20,6 +20,7 @@ app.add_middleware(
 # 1. JSON 데이터베이스 파일 로드
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "stage1_quizzes.json")
+CARDS_PATH = os.path.join(BASE_DIR, "cards.json")
 
 try:
     with open(JSON_PATH, "r", encoding="utf-8") as f:
@@ -32,8 +33,15 @@ try:
         quiz["answer_index"] = quiz["options"].index(correct_text)  # 새로 섞인 정답 위치 반영
 
 except Exception as e:
-    print(f"JSON 파일 로드 실패: {e}")
+    print(f"퀴즈 JSON 파일 로드 실패: {e}")
     QUIZ_DATABASE = []
+
+try:
+    with open(CARDS_PATH, "r", encoding="utf-8") as f:
+        CARD_DATABASE = json.load(f)
+except Exception as e:
+    print(f"카드 JSON 파일 로드 실패: {e}")
+    CARD_DATABASE = []
 
 # 2. 데이터 모델
 class VerifyRequest(BaseModel):
@@ -50,7 +58,12 @@ class VerifyResponse(BaseModel):
 @app.get("/")
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "total_quizzes": len(QUIZ_DATABASE)}
+    return {"status": "ok", "total_quizzes": len(QUIZ_DATABASE), "total_cards": len(CARD_DATABASE)}
+
+@app.get("/api/cards")
+def get_cards():
+    """도감 카드 데이터 목록 반환"""
+    return CARD_DATABASE
 
 @app.get("/api/quizzes")
 def get_random_quizzes(count: int = 10):

@@ -78,11 +78,16 @@
       margin-bottom: 12px;
     }
 
+    .header-btns {
+      display: flex;
+      gap: 6px;
+    }
+
     .deck-btn {
       background: #3b82f6;
       color: white;
       border: none;
-      padding: 8px 14px;
+      padding: 8px 12px;
       border-radius: 20px;
       font-size: 13px;
       font-weight: bold;
@@ -92,6 +97,22 @@
 
     .deck-btn:hover {
       background: #1d4ed8;
+    }
+
+    .gacha-shop-btn {
+      background: #8b5cf6;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .gacha-shop-btn:hover {
+      background: #6d28d9;
     }
 
     /* 대시보드 상태바 */
@@ -122,7 +143,7 @@
       display: none;
     }
 
-    /* 메인 화면 스티커/버프 표시 */
+    /* 메인 화면 */
     .main-screen {
       text-align: center;
       padding: 10px 0;
@@ -152,10 +173,23 @@
       border: 1px dashed #3b82f6;
       padding: 14px;
       border-radius: 12px;
-      margin: 16px 0;
+      margin: 12px 0;
       font-size: 14px;
       color: #1e40af;
       text-align: left;
+    }
+
+    .point-badge-box {
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      padding: 12px 16px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-weight: bold;
+      color: #6d28d9;
     }
 
     /* 타이머 바 */
@@ -352,19 +386,30 @@
       align-items: center;
     }
 
+    .grade-UR {
+      border-color: #ef4444;
+      background: linear-gradient(135deg, #fff1f2, #ffe4e6, #fef3c7);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.25);
+    }
+
     .grade-SSR {
       border-color: #f59e0b;
       background: linear-gradient(135deg, #fffbeb, #fef3c7);
     }
 
-    .grade-A {
+    .grade-SR {
       border-color: #8b5cf6;
       background: linear-gradient(135deg, #f5f3ff, #ede9fe);
     }
 
-    .grade-B {
+    .grade-R {
       border-color: #3b82f6;
       background: linear-gradient(135deg, #eff6ff, #dbeafe);
+    }
+
+    .grade-UC {
+      border-color: #10b981;
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
     }
 
     .grade-C {
@@ -381,31 +426,58 @@
       color: white;
     }
 
+    .badge-UR {
+      background: linear-gradient(135deg, #dc2626, #991b1b);
+      box-shadow: 0 0 4px rgba(220, 38, 38, 0.5);
+    }
+
     .badge-SSR {
       background: #d97706;
     }
 
-    .badge-A {
+    .badge-SR {
       background: #7c3aed;
     }
 
-    .badge-B {
+    .badge-R {
       background: #2563eb;
+    }
+
+    .badge-UC {
+      background: #059669;
     }
 
     .badge-C {
       background: #64748b;
     }
 
+    .deck-tab {
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: white;
+      font-size: 12px;
+      font-weight: bold;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .deck-tab.active {
+      background: #2563eb;
+      color: white;
+      border-color: #2563eb;
+    }
+
     .gacha-box {
       text-align: center;
-      padding: 20px 0;
+      padding: 10px 0;
     }
 
     .gacha-card-anim {
       width: 180px;
       height: 230px;
-      margin: 0 auto 20px;
+      margin: 0 auto 16px;
       border-radius: 16px;
       display: flex;
       flex-direction: column;
@@ -439,14 +511,21 @@
       <p style="font-size: 12px; color: #94a3b8;">무료 서버 특성상 첫 접속 시 30~50초 소요될 수 있습니다.</p>
     </div>
 
-    <!-- 2. 메인 대기실 화면 (시작 화면) -->
+    <!-- 2. 메인 대기실 화면 -->
     <div id="mainScreen" class="main-screen" style="display: none;">
       <div class="header">
         <h2 style="margin: 0; font-size: 22px;">📈 주식 지식 퀴즈</h2>
-        <button class="deck-btn" onclick="openDeckModal()">🎴 내 카드 도감</button>
+        <div class="header-btns">
+          <button class="gacha-shop-btn" onclick="openGachaModal()">🎰 뽑기샵</button>
+          <button class="deck-btn" onclick="openDeckModal()">🎴 도감</button>
+        </div>
       </div>
 
-      <p style="color: #64748b; font-size: 14px; margin-top: 6px;">10문제를 풀고 주식 기업 가챠 카드를 수집해 보세요!</p>
+      <!-- 보유 포인트 잔액 표시 -->
+      <div class="point-badge-box">
+        <span>🪙 보유 가챠 포인트</span>
+        <span id="mainGachaPoints" style="font-size: 18px;">0 pt</span>
+      </div>
 
       <div class="buff-card-info" id="mainBuffInfo">
         <strong>🎴 장착 중인 카드:</strong>
@@ -455,10 +534,10 @@
 
       <div
         style="background: #f8fafc; padding: 14px; border-radius: 12px; font-size: 13px; color: #475569; text-align: left; line-height: 1.6;">
-        <b>💡 게임 규칙 안내:</b><br>
-        • 문제당 제한시간 <b>10초</b> (빠르게 맞히면 보너스 점수!)<br>
-        • 하트 <b>3개</b> 제공 (오답 또는 시간 초과 시 감소)<br>
-        • 10문제 완주 시 <b>주식 기업 카드 뽑기권</b> 증정!
+        <b>💡 게임 규칙 및 포인트 안내:</b><br>
+        • 퀴즈로 획득한 점수의 <b>1/100</b>이 가챠 포인트로 자동 적립됩니다.<br>
+        • <b>10 pt</b>를 모을 때마다 주식 카드 1회 뽑기가 가능합니다.<br>
+        • 하트 <b>3개</b> 제공 / 문제당 제한시간 <b>10초</b>
       </div>
 
       <button class="start-btn" onclick="startGame()">🚀 퀴즈 게임 시작하기</button>
@@ -468,7 +547,9 @@
     <div id="quizCard" class="quiz-card">
       <div class="header">
         <h3 style="margin: 0; font-size: 18px;">📈 주식 지식 퀴즈</h3>
-        <button class="deck-btn" onclick="openDeckModal()" style="font-size: 11px; padding: 4px 10px;">🎴 도감</button>
+        <div class="header-btns">
+          <button class="deck-btn" onclick="openDeckModal()" style="font-size: 11px; padding: 4px 10px;">🎴 도감</button>
+        </div>
       </div>
 
       <div class="status-bar">
@@ -510,36 +591,56 @@
     </footer>
   </div>
 
-  <!-- 4. 가챠 모달 -->
+  <!-- 4. 가챠(뽑기) 모달 -->
   <div class="modal-overlay" id="gachaModal">
     <div class="modal-card gacha-box">
-      <h3 style="margin-top: 0;">🎉 10문제 완주 축하합니다!</h3>
-      <p style="font-size: 14px; color: #64748b;">주식 기업 가챠 카드 1회 뽑기권을 획득했습니다.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0;">🎰 주식 카드 뽑기 상점</h3>
+        <span onclick="closeGachaModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
+      </div>
+
+      <div
+        style="background: #f5f3ff; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #6d28d9; margin-bottom: 16px;">
+        보유 가챠 포인트: <span id="modalGachaPoints">0</span> pt (1회당 10 pt)
+      </div>
 
       <div id="gachaResultContainer"
-        style="min-height: 230px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-        <button onclick="drawGachaCard()"
-          style="padding: 16px 32px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 12px; cursor: pointer;">
-          🎴 카드 뽑기 실행!
+        style="min-height: 220px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <button id="drawGachaBtn" onclick="drawGachaCard()"
+          style="padding: 16px 32px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);">
+          🎴 카드 뽑기 실행 (10 pt)
         </button>
       </div>
 
       <button onclick="closeGachaModal()"
-        style="width: 100%; margin-top: 16px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">메인
-        화면으로 돌아가기</button>
+        style="width: 100%; margin-top: 16px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">닫기</button>
     </div>
   </div>
 
   <!-- 5. 내 카드 도감 모달 -->
   <div class="modal-overlay" id="deckModal">
-    <div class="modal-card">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
         <h3 style="margin: 0;">🎴 내 카드 도감</h3>
         <span onclick="closeDeckModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
       </div>
-      <p style="font-size: 13px; color: #64748b; margin-bottom: 16px;">수집한 카드를 장착하면 게임 내 강력한 패시브 스탯이 적용됩니다.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <span style="font-size: 13px; color: #64748b;">수집한 카드를 장착하여 버프를 적용하세요.</span>
+        <span id="deckHeaderStats" style="font-size: 12px; font-weight: bold; color: #2563eb;">수집률: 0 / 90종</span>
+      </div>
 
-      <div id="deckListContainer"></div>
+      <!-- 등급 필터 탭 -->
+      <div style="display: flex; gap: 4px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px;">
+        <button class="deck-tab active" onclick="filterDeck('ALL')">전체</button>
+        <button class="deck-tab" onclick="filterDeck('UR')">UR</button>
+        <button class="deck-tab" onclick="filterDeck('SSR')">SSR</button>
+        <button class="deck-tab" onclick="filterDeck('SR')">SR</button>
+        <button class="deck-tab" onclick="filterDeck('R')">R</button>
+        <button class="deck-tab" onclick="filterDeck('UC')">UC</button>
+        <button class="deck-tab" onclick="filterDeck('C')">C</button>
+      </div>
+
+      <div id="deckListContainer" style="flex: 1; overflow-y: auto; padding-right: 4px;"></div>
 
       <button onclick="closeDeckModal()"
         style="width: 100%; margin-top: 12px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">닫기</button>
@@ -549,25 +650,19 @@
   <script>
     const API_BASE_URL = 'https://stock-quiz-game.onrender.com';
 
-    // 카드 마스터 데이터
-    const CARD_DATABASE = [
-      { id: 'c1', name: '페니스톡 동전주', grade: 'C', rate: 45, effectType: 'score', value: 0.05, desc: '획득 점수 +5%' },
-      { id: 'c2', name: '잡주 바이오', grade: 'C', rate: 25, effectType: 'timer', value: 1, desc: '제한시간 +1초' },
-      { id: 'b1', name: '카카오', grade: 'B', rate: 15, effectType: 'score', value: 0.10, desc: '획득 점수 +10%' },
-      { id: 'b2', name: '네이버', grade: 'B', rate: 10, effectType: 'timer', value: 2, desc: '제한시간 +2초' },
-      { id: 'a1', name: '삼성전자', grade: 'A', rate: 3.5, effectType: 'timer', value: 3, desc: '제한시간 +3초' },
-      { id: 'a2', name: '테슬라', grade: 'A', rate: 1.0, effectType: 'score', value: 0.20, desc: '획득 점수 +20%' },
-      { id: 'ssr1', name: '워렌 버핏', grade: 'SSR', rate: 0.4, effectType: 'score', value: 0.35, desc: '획득 점수 +35%' },
-      { id: 'ssr2', name: '피터 린치', grade: 'SSR', rate: 0.1, effectType: 'heart', value: 1, desc: '기본 목숨 +1개 (하트 4개)' }
-    ];
+    // 카드 마스터 데이터 (cards.json 또는 API로부터 동적 로드)
+    let CARD_DATABASE = [];
 
+    // 저장 데이터
     let myCards = JSON.parse(localStorage.getItem('sq_my_cards')) || ['c1'];
     let equippedCardId = localStorage.getItem('sq_equipped_card') || 'c1';
+    let gachaPoints = parseInt(localStorage.getItem('sq_gacha_points')) || 0; // 가챠 포인트 누적 저장
 
     let quizzes = [];
     let currentIndex = 0;
     let totalScore = 0;
     let lives = 3;
+    let shieldCount = 0;
     let combo = 0;
 
     let baseTimeLimit = 10;
@@ -576,9 +671,25 @@
 
     let used5050 = false;
     let usedAddTime = false;
+    let currentDeckFilter = 'ALL';
+
+    // 카드 데이터 로드 (백엔드 API 단일 원본)
+    async function loadCards() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/cards`);
+        if (response.ok) {
+          CARD_DATABASE = await response.json();
+        } else {
+          console.error('카드 API 응답 오류:', response.status);
+        }
+      } catch (e) {
+        console.error('카드 API 연결 실패:', e);
+      }
+    }
 
     // 1. 서버 초기 연결
     async function initGame() {
+      await loadCards();
       updateMainBuffDisplay();
 
       try {
@@ -587,7 +698,6 @@
 
         quizzes = await response.json();
 
-        // 로딩 화면 숨기고 메인 화면 표시
         document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainScreen').style.display = 'block';
       } catch (error) {
@@ -596,10 +706,11 @@
       }
     }
 
-    // 메인 화면 버프 상태 업데이트
+    // 메인 화면 버프 및 포인트 상태 업데이트
     function updateMainBuffDisplay() {
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
       const textEl = document.getElementById('mainBuffText');
+      document.getElementById('mainGachaPoints').innerText = `${gachaPoints} pt`;
 
       baseTimeLimit = 10;
 
@@ -607,13 +718,15 @@
         textEl.innerHTML = `<span class="grade-badge badge-${card.grade}">${card.grade}</span> ${card.name} (${card.desc})`;
         if (card.effectType === 'timer') {
           baseTimeLimit += card.value;
+        } else if (card.effectType === 'all_buff') {
+          baseTimeLimit += (card.timerValue || 5);
         }
       } else {
         textEl.innerText = '장착 중인 카드가 없습니다.';
       }
     }
 
-    // 2. 게임 시작 버튼 클릭 시 작동
+    // 2. 게임 시작
     function startGame() {
       document.getElementById('mainScreen').style.display = 'none';
       document.getElementById('quizCard').classList.add('active');
@@ -630,7 +743,14 @@
       usedAddTime = false;
 
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      lives = (card && card.effectType === 'heart') ? 3 + card.value : 3;
+      let bonusHeart = 0;
+      if (card) {
+        if (card.effectType === 'heart') bonusHeart = card.value;
+        else if (card.effectType === 'all_buff') bonusHeart = (card.heartValue || 1);
+      }
+      lives = 3 + bonusHeart;
+
+      shieldCount = (card && card.effectType === 'shield') ? card.value : 0;
 
       document.getElementById('btn5050').disabled = false;
       document.getElementById('btnTime').disabled = false;
@@ -641,7 +761,12 @@
 
     function updateHeartsDisplay() {
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      const maxLives = (card && card.effectType === 'heart') ? 4 : 3;
+      let bonusHeart = 0;
+      if (card) {
+        if (card.effectType === 'heart') bonusHeart = card.value;
+        else if (card.effectType === 'all_buff') bonusHeart = (card.heartValue || 1);
+      }
+      const maxLives = 3 + bonusHeart;
       const heartStr = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, maxLives - lives));
       document.getElementById('heartsDisplay').innerText = heartStr;
     }
@@ -745,16 +870,26 @@
           combo++;
 
           const speedBonus = Math.floor(timeLeft * 10);
-          const comboBonus = combo > 1 ? combo * 20 : 0;
-          let calculatedPoints = result.points + speedBonus + comboBonus;
+          let comboBonus = combo > 1 ? combo * 20 : 0;
 
           const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-          if (card && card.effectType === 'score') {
+          if (card && card.effectType === 'combo_bonus') {
+            comboBonus += Math.floor(combo * card.value);
+          }
+
+          let calculatedPoints = result.points + speedBonus + comboBonus;
+
+          if (card && (card.effectType === 'score' || card.effectType === 'all_buff')) {
             calculatedPoints = Math.floor(calculatedPoints * (1 + card.value));
           }
 
           totalScore += calculatedPoints;
           document.getElementById('scoreDisplay').innerText = `점수: ${totalScore}`;
+
+          if (card && card.effectType === 'gacha_point') {
+            gachaPoints += card.value;
+            localStorage.setItem('sq_gacha_points', gachaPoints);
+          }
 
           confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
 
@@ -762,9 +897,14 @@
           combo = 0;
           if (!isTimeout) {
             selectedBtn.classList.add('wrong');
-            lives--;
-            triggerShake();
-            updateHeartsDisplay();
+            if (shieldCount > 0) {
+              shieldCount--;
+              alert('🛡️ 장착 카드의 보호막 효과로 목숨을 잃지 않았습니다!');
+            } else {
+              lives--;
+              triggerShake();
+              updateHeartsDisplay();
+            }
           }
           buttons[result.correct_index].classList.add('correct');
         }
@@ -779,8 +919,7 @@
           document.getElementById('nextBtn').style.display = 'block';
         } else {
           setTimeout(() => {
-            alert(`💔 하트가 모두 소진되었습니다!\n최종 점수: ${totalScore}점`);
-            returnToMainScreen();
+            finishGameSession(`💔 게임 종료!`);
           }, 500);
         }
 
@@ -829,8 +968,19 @@
       if (currentIndex < quizzes.length) {
         renderQuiz();
       } else {
-        openGachaModal();
+        finishGameSession(`🎉 10문제 완주 축하합니다!`);
       }
+    }
+
+    // ★ 퀴즈 세트 정산 (점수 1/100을 가챠 포인트로 전환 및 저장)
+    function finishGameSession(messageTitle) {
+      const earnedGachaPts = Math.floor(totalScore / 100);
+      gachaPoints += earnedGachaPts;
+      localStorage.setItem('sq_gacha_points', gachaPoints);
+
+      alert(`${messageTitle}\n• 최종 점수: ${totalScore}점\n• 획득 가챠 포인트: +${earnedGachaPts} pt (총 ${gachaPoints} pt)`);
+
+      returnToMainScreen();
     }
 
     function returnToMainScreen() {
@@ -840,17 +990,38 @@
       initGame();
     }
 
-    // 가챠 모달
+    // 🎰 가챠 상점 모달
     function openGachaModal() {
+      updateGachaModalUI();
       document.getElementById('gachaModal').classList.add('active');
-      document.getElementById('gachaResultContainer').innerHTML = `
-        <button onclick="drawGachaCard()" style="padding: 16px 32px; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; border-radius: 12px; cursor: pointer;">
-          🎴 카드 뽑기 실행!
-        </button>
-      `;
+    }
+
+    function updateGachaModalUI() {
+      document.getElementById('modalGachaPoints').innerText = gachaPoints;
+      const btn = document.getElementById('drawGachaBtn');
+      if (btn) {
+        if (gachaPoints < 10) {
+          btn.disabled = true;
+          btn.style.opacity = '0.5';
+          btn.innerText = '포인트 부족 (최소 10 pt 필요)';
+        } else {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.innerText = '🎴 카드 뽑기 실행 (10 pt)';
+        }
+      }
     }
 
     function drawGachaCard() {
+      if (gachaPoints < 10) return;
+
+      // 10 포인트 차감
+      gachaPoints -= 10;
+      localStorage.setItem('sq_gacha_points', gachaPoints);
+      updateGachaModalUI();
+      updateMainBuffDisplay();
+
+      // 무작위 추첨
       const rand = Math.random() * 100;
       let cumulative = 0;
       let drawnCard = CARD_DATABASE[0];
@@ -876,13 +1047,17 @@
           <h3 style="margin: 12px 0 6px 0;">${drawnCard.name}</h3>
           <p style="font-size: 13px; font-weight: bold; color: #475569;">${drawnCard.desc}</p>
         </div>
-        <p style="font-size: 14px; font-weight: bold; color: #16a34a;">✨ 획득 성공! 도감에 저장되었습니다.</p>
+        <p style="font-size: 14px; font-weight: bold; color: #16a34a; margin-bottom: 12px;">✨ 획득 성공! 도감에 저장되었습니다.</p>
+        <button id="drawGachaBtn" onclick="drawGachaCard()" style="padding: 12px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border: none; border-radius: 10px; cursor: pointer;">
+          한 번 더 뽑기 (10 pt)
+        </button>
       `;
+
+      updateGachaModalUI();
     }
 
     function closeGachaModal() {
       document.getElementById('gachaModal').classList.remove('active');
-      returnToMainScreen();
     }
 
     // 도감 모달
@@ -895,11 +1070,32 @@
       document.getElementById('deckModal').classList.remove('active');
     }
 
+    function filterDeck(grade) {
+      currentDeckFilter = grade;
+      document.querySelectorAll('.deck-tab').forEach(tab => {
+        const tabText = tab.innerText.trim();
+        const targetText = (grade === 'ALL' ? '전체' : grade);
+        tab.classList.toggle('active', tabText === targetText);
+      });
+      renderDeckList();
+    }
+
     function renderDeckList() {
       const container = document.getElementById('deckListContainer');
       container.innerHTML = '';
 
-      CARD_DATABASE.forEach(card => {
+      const filteredCards = (currentDeckFilter === 'ALL')
+        ? CARD_DATABASE
+        : CARD_DATABASE.filter(c => c.grade === currentDeckFilter);
+
+      const ownedCount = CARD_DATABASE.filter(c => myCards.includes(c.id)).length;
+      const statsEl = document.getElementById('deckHeaderStats');
+      if (statsEl) {
+        const pct = CARD_DATABASE.length ? Math.round((ownedCount / CARD_DATABASE.length) * 100) : 0;
+        statsEl.innerText = `수집률: ${ownedCount} / ${CARD_DATABASE.length}종 (${pct}%)`;
+      }
+
+      filteredCards.forEach(card => {
         const isOwned = myCards.includes(card.id);
         const isEquipped = (equippedCardId === card.id);
 
