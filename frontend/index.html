@@ -631,6 +631,7 @@
 
       <!-- 등급 필터 탭 -->
       <div style="display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; margin-bottom: 12px;">
+        <button class="deck-tab" onclick="filterDeck('OWNED')">보유</button>
         <button class="deck-tab active" onclick="filterDeck('ALL')">전체</button>
         <button class="deck-tab" onclick="filterDeck('UR')">UR</button>
         <button class="deck-tab" onclick="filterDeck('SSR')">SSR</button>
@@ -1074,7 +1075,9 @@
       currentDeckFilter = grade;
       document.querySelectorAll('.deck-tab').forEach(tab => {
         const tabText = tab.innerText.trim();
-        const targetText = (grade === 'ALL' ? '전체' : grade);
+        let targetText = grade;
+        if (grade === 'ALL') targetText = '전체';
+        else if (grade === 'OWNED') targetText = '보유';
         tab.classList.toggle('active', tabText === targetText);
       });
       renderDeckList();
@@ -1084,15 +1087,28 @@
       const container = document.getElementById('deckListContainer');
       container.innerHTML = '';
 
-      const filteredCards = (currentDeckFilter === 'ALL')
-        ? CARD_DATABASE
-        : CARD_DATABASE.filter(c => c.grade === currentDeckFilter);
+      let filteredCards = CARD_DATABASE;
+      if (currentDeckFilter === 'OWNED') {
+        filteredCards = CARD_DATABASE.filter(c => myCards.includes(c.id));
+      } else if (currentDeckFilter !== 'ALL') {
+        filteredCards = CARD_DATABASE.filter(c => c.grade === currentDeckFilter);
+      }
 
       const ownedCount = CARD_DATABASE.filter(c => myCards.includes(c.id)).length;
       const statsEl = document.getElementById('deckHeaderStats');
       if (statsEl) {
         const pct = CARD_DATABASE.length ? Math.round((ownedCount / CARD_DATABASE.length) * 100) : 0;
         statsEl.innerText = `수집률: ${ownedCount} / ${CARD_DATABASE.length}종 (${pct}%)`;
+      }
+
+      if (filteredCards.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; color: #94a3b8; padding: 40px 0; font-size: 14px; font-weight: bold;">
+            보유 중인 카드가 없습니다.<br>
+            <span style="font-size: 12px; color: #cbd5e1; margin-top: 4px; display: inline-block;">🎰 뽑기샵에서 카드를 뽑아보세요!</span>
+          </div>
+        `;
+        return;
       }
 
       filteredCards.forEach(card => {
