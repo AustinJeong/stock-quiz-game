@@ -619,18 +619,18 @@
 
   <!-- 5. 내 카드 도감 모달 -->
   <div class="modal-overlay" id="deckModal">
-    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
         <h3 style="margin: 0;">🎴 내 카드 도감</h3>
         <span onclick="closeDeckModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
       </div>
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
         <span style="font-size: 13px; color: #64748b;">수집한 카드를 장착하여 버프를 적용하세요.</span>
         <span id="deckHeaderStats" style="font-size: 12px; font-weight: bold; color: #2563eb;">수집률: 0 / 90종</span>
       </div>
 
       <!-- 등급 필터 탭 -->
-      <div style="display: flex; gap: 4px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px;">
+      <div style="display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0; margin-bottom: 12px;">
         <button class="deck-tab active" onclick="filterDeck('ALL')">전체</button>
         <button class="deck-tab" onclick="filterDeck('UR')">UR</button>
         <button class="deck-tab" onclick="filterDeck('SSR')">SSR</button>
@@ -640,10 +640,10 @@
         <button class="deck-tab" onclick="filterDeck('C')">C</button>
       </div>
 
-      <div id="deckListContainer" style="flex: 1; overflow-y: auto; padding-right: 4px;"></div>
+      <div id="deckListContainer" style="flex: 1; overflow-y: auto; min-height: 0; padding-right: 4px;"></div>
 
       <button onclick="closeDeckModal()"
-        style="width: 100%; margin-top: 12px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">닫기</button>
+        style="width: 100%; margin-top: 12px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex-shrink: 0;">닫기</button>
     </div>
   </div>
 
