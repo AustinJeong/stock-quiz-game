@@ -1,0 +1,208 @@
+[
+  {
+    "id": "ach_c1",
+    "title": "Common 카드 수집가 I",
+    "desc": "Common(C) 등급 카드 5종 수집",
+    "gradeFilter": "C",
+    "targetCount": 5,
+    "effectType": "score",
+    "effectValue": 0.01,
+    "rewardDesc": "획득 점수 +1%"
+  },
+  {
+    "id": "ach_c2",
+    "title": "Common 카드 수집가 II",
+    "desc": "Common(C) 등급 카드 10종 수집",
+    "gradeFilter": "C",
+    "targetCount": 10,
+    "effectType": "score",
+    "effectValue": 0.02,
+    "rewardDesc": "획득 점수 +2%"
+  },
+  {
+    "id": "ach_c3",
+    "title": "Common 마스터",
+    "desc": "Common(C) 등급 카드 20종 올클리어",
+    "gradeFilter": "C",
+    "targetCount": 20,
+    "effectType": "score",
+    "effectValue": 0.03,
+    "rewardDesc": "획득 점수 +3%"
+  },
+
+  {
+    "id": "ach_uc1",
+    "title": "Uncommon 수집가 I",
+    "desc": "Uncommon(UC) 등급 카드 5종 수집",
+    "gradeFilter": "UC",
+    "targetCount": 5,
+    "effectType": "timer",
+    "effectValue": 1,
+    "rewardDesc": "제한시간 +1초"
+  },
+  {
+    "id": "ach_uc2",
+    "title": "Uncommon 수집가 II",
+    "desc": "Uncommon(UC) 등급 카드 10종 수집",
+    "gradeFilter": "UC",
+    "targetCount": 10,
+    "effectType": "timer",
+    "effectValue": 1,
+    "rewardDesc": "제한시간 +1초"
+  },
+  {
+    "id": "ach_uc3",
+    "title": "Uncommon 마스터",
+    "desc": "Uncommon(UC) 등급 카드 20종 올클리어",
+    "gradeFilter": "UC",
+    "targetCount": 20,
+    "effectType": "timer",
+    "effectValue": 2,
+    "rewardDesc": "제한시간 +2초"
+  },
+
+  {
+    "id": "ach_r1",
+    "title": "Rare 수집가 I",
+    "desc": "Rare(R) 등급 카드 5종 수집",
+    "gradeFilter": "R",
+    "targetCount": 5,
+    "effectType": "combo_bonus",
+    "effectValue": 10,
+    "rewardDesc": "콤보당 점수 +10점"
+  },
+  {
+    "id": "ach_r2",
+    "title": "Rare 수집가 II",
+    "desc": "Rare(R) 등급 카드 10종 수집",
+    "gradeFilter": "R",
+    "targetCount": 10,
+    "effectType": "combo_bonus",
+    "effectValue": 20,
+    "rewardDesc": "콤보당 점수 +20점"
+  },
+  {
+    "id": "ach_r3",
+    "title": "Rare 마스터",
+    "desc": "Rare(R) 등급 카드 20종 올클리어",
+    "gradeFilter": "R",
+    "targetCount": 20,
+    "effectType": "combo_bonus",
+    "effectValue": 30,
+    "rewardDesc": "콤보당 점수 +30점"
+  },
+
+  {
+    "id": "ach_sr1",
+    "title": "Super Rare 수집가 I",
+    "desc": "Super Rare(SR) 등급 카드 3종 수집",
+    "gradeFilter": "SR",
+    "targetCount": 3,
+    "effectType": "score",
+    "effectValue": 0.03,
+    "rewardDesc": "획득 점수 +3%"
+  },
+  {
+    "id": "ach_sr2",
+    "title": "Super Rare 수집가 II",
+    "desc": "Super Rare(SR) 등급 카드 8종 수집",
+    "gradeFilter": "SR",
+    "targetCount": 8,
+    "effectType": "score",
+    "effectValue": 0.05,
+    "rewardDesc": "획득 점수 +5%"
+  },
+  {
+    "id": "ach_sr3",
+    "title": "Super Rare 마스터",
+    "desc": "Super Rare(SR) 등급 카드 15종 올클리어",
+    "gradeFilter": "SR",
+    "targetCount": 15,
+    "effectType": "score",
+    "effectValue": 0.07,
+    "rewardDesc": "획득 점수 +7%"
+  },
+
+  {
+    "id": "ach_ssr1",
+    "title": "SSR의 입문자",
+    "desc": "SSR 등급 카드 1종 수집",
+    "gradeFilter": "SSR",
+    "targetCount": 1,
+    "effectType": "heart",
+    "effectValue": 1,
+    "rewardDesc": "기본 목숨 +1개"
+  },
+  {
+    "id": "ach_ssr2",
+    "title": "SSR의 학자",
+    "desc": "SSR 등급 카드 5종 수집",
+    "gradeFilter": "SSR",
+    "targetCount": 5,
+    "effectType": "timer",
+    "effectValue": 2,
+    "rewardDesc": "제한시간 +2초"
+  },
+  {
+    "id": "ach_ssr3",
+    "title": "SSR 컬렉터",
+    "desc": "SSR 등급 카드 10종 올클리어",
+    "gradeFilter": "SSR",
+    "targetCount": 10,
+    "effectType": "score",
+    "effectValue": 0.10,
+    "rewardDesc": "획득 점수 +10%"
+  },
+
+  {
+    "id": "ach_ur1",
+    "title": "UR 전설의 첫걸음",
+    "desc": "UR 등급 카드 1종 수집",
+    "gradeFilter": "UR",
+    "targetCount": 1,
+    "effectType": "score",
+    "effectValue": 0.10,
+    "rewardDesc": "획득 점수 +10%"
+  },
+  {
+    "id": "ach_ur2",
+    "title": "UR 전설 수집가",
+    "desc": "UR 등급 카드 3종 수집",
+    "gradeFilter": "UR",
+    "targetCount": 3,
+    "effectType": "timer",
+    "effectValue": 3,
+    "rewardDesc": "제한시간 +3초"
+  },
+
+  {
+    "id": "ach_all1",
+    "title": "초보 수집가",
+    "desc": "전체 카드 10종 수집",
+    "gradeFilter": "ALL",
+    "targetCount": 10,
+    "effectType": "gacha_point",
+    "effectValue": 1,
+    "rewardDesc": "정답 시 가챠포인트 +1pt"
+  },
+  {
+    "id": "ach_all2",
+    "title": "중급 수집가",
+    "desc": "전체 카드 30종 수집",
+    "gradeFilter": "ALL",
+    "targetCount": 30,
+    "effectType": "gacha_point",
+    "effectValue": 2,
+    "rewardDesc": "정답 시 가챠포인트 +2pt"
+  },
+  {
+    "id": "ach_all3",
+    "title": "도감의 대가",
+    "desc": "전체 카드 50종 수집",
+    "gradeFilter": "ALL",
+    "targetCount": 50,
+    "effectType": "shield",
+    "effectValue": 1,
+    "rewardDesc": "오답 방어 보호막 +1회"
+  }
+]

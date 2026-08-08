@@ -21,6 +21,7 @@ app.add_middleware(
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 JSON_PATH = os.path.join(BASE_DIR, "stage1_quizzes.json")
 CARDS_PATH = os.path.join(BASE_DIR, "cards.json")
+ACHIEVEMENTS_PATH = os.path.join(BASE_DIR, "achievements.json")
 
 try:
     with open(JSON_PATH, "r", encoding="utf-8") as f:
@@ -43,6 +44,13 @@ except Exception as e:
     print(f"카드 JSON 파일 로드 실패: {e}")
     CARD_DATABASE = []
 
+try:
+    with open(ACHIEVEMENTS_PATH, "r", encoding="utf-8") as f:
+        ACHIEVEMENTS_DATABASE = json.load(f)
+except Exception as e:
+    print(f"달성과제 JSON 파일 로드 실패: {e}")
+    ACHIEVEMENTS_DATABASE = []
+
 # 2. 데이터 모델
 class VerifyRequest(BaseModel):
     quiz_id: str
@@ -58,12 +66,22 @@ class VerifyResponse(BaseModel):
 @app.get("/")
 @app.get("/health")
 def health_check():
-    return {"status": "ok", "total_quizzes": len(QUIZ_DATABASE), "total_cards": len(CARD_DATABASE)}
+    return {
+        "status": "ok",
+        "total_quizzes": len(QUIZ_DATABASE),
+        "total_cards": len(CARD_DATABASE),
+        "total_achievements": len(ACHIEVEMENTS_DATABASE)
+    }
 
 @app.get("/api/cards")
 def get_cards():
     """도감 카드 데이터 목록 반환"""
     return CARD_DATABASE
+
+@app.get("/api/achievements")
+def get_achievements():
+    """달성과제(업적) 마스터 목록 반환"""
+    return ACHIEVEMENTS_DATABASE
 
 @app.get("/api/quizzes")
 def get_random_quizzes(count: int = 10):

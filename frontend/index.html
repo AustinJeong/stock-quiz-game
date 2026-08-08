@@ -115,6 +115,53 @@
       background: #6d28d9;
     }
 
+    .achievement-btn {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .achievement-btn:hover {
+      background: linear-gradient(135deg, #d97706, #b45309);
+    }
+
+    .achievement-item {
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .achievement-item.completed {
+      border-color: #f59e0b;
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+    }
+
+    .achievement-progress-bar {
+      width: 100%;
+      height: 6px;
+      background-color: #e2e8f0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .achievement-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f59e0b, #10b981);
+      transition: width 0.3s ease;
+    }
+
     /* 대시보드 상태바 */
     .status-bar {
       display: flex;
@@ -518,6 +565,7 @@
         <div class="header-btns">
           <button class="gacha-shop-btn" onclick="openGachaModal()">🎰 뽑기샵</button>
           <button class="deck-btn" onclick="openDeckModal()">🎴 도감</button>
+          <button class="achievement-btn" onclick="openAchievementModal()">🏆 달성과제</button>
         </div>
       </div>
 
@@ -549,6 +597,7 @@
         <h3 style="margin: 0; font-size: 18px;">📈 주식 지식 퀴즈</h3>
         <div class="header-btns">
           <button class="deck-btn" onclick="openDeckModal()" style="font-size: 11px; padding: 4px 10px;">🎴 도감</button>
+          <button class="achievement-btn" onclick="openAchievementModal()" style="font-size: 11px; padding: 4px 10px;">🏆 달성과제</button>
         </div>
       </div>
 
@@ -648,6 +697,25 @@
     </div>
   </div>
 
+  <!-- 6. 달성과제(업적) 모달 -->
+  <div class="modal-overlay" id="achievementModal">
+    <div class="modal-card" style="max-height: 85vh; display: flex; flex-direction: column; overflow: hidden;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-shrink: 0;">
+        <h3 style="margin: 0;">🏆 달성과제 (업적)</h3>
+        <span onclick="closeAchievementModal()" style="font-size: 20px; cursor: pointer; color: #94a3b8;">&times;</span>
+      </div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-shrink: 0;">
+        <span style="font-size: 13px; color: #64748b;">카드를 수집하여 영구 패시브 보너스를 획득하세요!</span>
+        <span id="achievementHeaderStats" style="font-size: 12px; font-weight: bold; color: #d97706;">달성: 0 / 20</span>
+      </div>
+
+      <div id="achievementListContainer" style="flex: 1; overflow-y: auto; min-height: 0; padding-right: 4px;"></div>
+
+      <button onclick="closeAchievementModal()"
+        style="width: 100%; margin-top: 12px; padding: 12px; background: #e2e8f0; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; flex-shrink: 0;">닫기</button>
+    </div>
+  </div>
+
   <script>
     const API_BASE_URL = 'https://stock-quiz-game.onrender.com';
 
@@ -674,6 +742,52 @@
     let usedAddTime = false;
     let currentDeckFilter = 'ALL';
 
+    // 🏆 달성과제(업적) 데이터 마스터 (백엔드 API 로드)
+    let ACHIEVEMENTS = [];
+
+    function getOwnedCountByGrade(grade) {
+      if (grade === 'ALL') {
+        return CARD_DATABASE.filter(c => myCards.includes(c.id)).length;
+      }
+      return CARD_DATABASE.filter(c => c.grade === grade && myCards.includes(c.id)).length;
+    }
+
+    function checkAchievements() {
+      const completedList = [];
+      ACHIEVEMENTS.forEach(ach => {
+        const count = getOwnedCountByGrade(ach.gradeFilter);
+        if (count >= ach.targetCount) {
+          completedList.push(ach.id);
+        }
+      });
+      return completedList;
+    }
+
+    function getAchievementBuffs() {
+      const buffs = {
+        scoreBuff: 0,
+        timerBuff: 0,
+        heartBuff: 0,
+        shieldBuff: 0,
+        comboBuff: 0,
+        gachaPointBuff: 0
+      };
+
+      const completed = checkAchievements();
+      ACHIEVEMENTS.forEach(ach => {
+        if (completed.includes(ach.id)) {
+          if (ach.effectType === 'score') buffs.scoreBuff += ach.effectValue;
+          else if (ach.effectType === 'timer') buffs.timerBuff += ach.effectValue;
+          else if (ach.effectType === 'heart') buffs.heartBuff += ach.effectValue;
+          else if (ach.effectType === 'shield') buffs.shieldBuff += ach.effectValue;
+          else if (ach.effectType === 'combo_bonus') buffs.comboBuff += ach.effectValue;
+          else if (ach.effectType === 'gacha_point') buffs.gachaPointBuff += ach.effectValue;
+        }
+      });
+
+      return buffs;
+    }
+
     // 카드 데이터 로드 (백엔드 API 단일 원본)
     async function loadCards() {
       try {
@@ -688,10 +802,25 @@
       }
     }
 
+    // 달성과제 데이터 로드 (백엔드 API 단일 원본)
+    async function loadAchievements() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/achievements`);
+        if (response.ok) {
+          ACHIEVEMENTS = await response.json();
+        } else {
+          console.error('달성과제 API 응답 오류:', response.status);
+        }
+      } catch (e) {
+        console.error('달성과제 API 연결 실패:', e);
+      }
+    }
+
     // 1. 서버 초기 연결
     async function initGame() {
-      await loadCards();
+      await Promise.all([loadCards(), loadAchievements()]);
       updateMainBuffDisplay();
+
 
       try {
         const response = await fetch(`${API_BASE_URL}/api/quizzes?count=10`);
@@ -713,18 +842,37 @@
       const textEl = document.getElementById('mainBuffText');
       document.getElementById('mainGachaPoints').innerText = `${gachaPoints} pt`;
 
-      baseTimeLimit = 10;
+      const achBuffs = getAchievementBuffs();
+      baseTimeLimit = 10 + achBuffs.timerBuff;
 
+      let cardText = '';
       if (card) {
-        textEl.innerHTML = `<span class="grade-badge badge-${card.grade}">${card.grade}</span> ${card.name} (${card.desc})`;
+        cardText = `<span class="grade-badge badge-${card.grade}">${card.grade}</span> ${card.name} (${card.desc})`;
         if (card.effectType === 'timer') {
           baseTimeLimit += card.value;
         } else if (card.effectType === 'all_buff') {
           baseTimeLimit += (card.timerValue || 5);
         }
       } else {
-        textEl.innerText = '장착 중인 카드가 없습니다.';
+        cardText = '장착 중인 카드가 없습니다.';
       }
+
+      const passiveSummary = [];
+      if (achBuffs.scoreBuff > 0) passiveSummary.push(`점수 +${Math.round(achBuffs.scoreBuff * 100)}%`);
+      if (achBuffs.timerBuff > 0) passiveSummary.push(`시간 +${achBuffs.timerBuff}초`);
+      if (achBuffs.heartBuff > 0) passiveSummary.push(`목숨 +${achBuffs.heartBuff}개`);
+      if (achBuffs.shieldBuff > 0) passiveSummary.push(`보호막 +${achBuffs.shieldBuff}회`);
+      if (achBuffs.comboBuff > 0) passiveSummary.push(`콤보 +${achBuffs.comboBuff}점`);
+      if (achBuffs.gachaPointBuff > 0) passiveSummary.push(`가챠pt +${achBuffs.gachaPointBuff}pt`);
+
+      let passiveText = '';
+      if (passiveSummary.length > 0) {
+        passiveText = `<div style="margin-top: 6px; font-size: 12px; color: #d97706; font-weight: bold;">🏆 달성과제 패시브 보너스: ${passiveSummary.join(', ')}</div>`;
+      } else {
+        passiveText = `<div style="margin-top: 6px; font-size: 12px; color: #94a3b8;">🏆 달성과제 패시브: 미적용 (달성과제를 완료해보세요!)</div>`;
+      }
+
+      textEl.innerHTML = cardText + passiveText;
     }
 
     // 2. 게임 시작
@@ -744,14 +892,17 @@
       usedAddTime = false;
 
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      let bonusHeart = 0;
+      const achBuffs = getAchievementBuffs();
+
+      let bonusHeart = achBuffs.heartBuff;
       if (card) {
-        if (card.effectType === 'heart') bonusHeart = card.value;
-        else if (card.effectType === 'all_buff') bonusHeart = (card.heartValue || 1);
+        if (card.effectType === 'heart') bonusHeart += card.value;
+        else if (card.effectType === 'all_buff') bonusHeart += (card.heartValue || 1);
       }
       lives = 3 + bonusHeart;
 
       shieldCount = (card && card.effectType === 'shield') ? card.value : 0;
+      shieldCount += achBuffs.shieldBuff;
 
       document.getElementById('btn5050').disabled = false;
       document.getElementById('btnTime').disabled = false;
@@ -762,10 +913,12 @@
 
     function updateHeartsDisplay() {
       const card = CARD_DATABASE.find(c => c.id === equippedCardId);
-      let bonusHeart = 0;
+      const achBuffs = getAchievementBuffs();
+
+      let bonusHeart = achBuffs.heartBuff;
       if (card) {
-        if (card.effectType === 'heart') bonusHeart = card.value;
-        else if (card.effectType === 'all_buff') bonusHeart = (card.heartValue || 1);
+        if (card.effectType === 'heart') bonusHeart += card.value;
+        else if (card.effectType === 'all_buff') bonusHeart += (card.heartValue || 1);
       }
       const maxLives = 3 + bonusHeart;
       const heartStr = '❤️'.repeat(Math.max(0, lives)) + '🖤'.repeat(Math.max(0, maxLives - lives));
@@ -871,24 +1024,35 @@
           combo++;
 
           const speedBonus = Math.floor(timeLeft * 10);
+          const achBuffs = getAchievementBuffs();
           let comboBonus = combo > 1 ? combo * 20 : 0;
 
           const card = CARD_DATABASE.find(c => c.id === equippedCardId);
+          let extraComboVal = achBuffs.comboBuff;
           if (card && card.effectType === 'combo_bonus') {
-            comboBonus += Math.floor(combo * card.value);
+            extraComboVal += card.value;
+          }
+          if (extraComboVal > 0) {
+            comboBonus += Math.floor(combo * extraComboVal);
           }
 
           let calculatedPoints = result.points + speedBonus + comboBonus;
 
+          let scoreMultiplier = 1 + achBuffs.scoreBuff;
           if (card && (card.effectType === 'score' || card.effectType === 'all_buff')) {
-            calculatedPoints = Math.floor(calculatedPoints * (1 + card.value));
+            scoreMultiplier += card.value;
           }
+          calculatedPoints = Math.floor(calculatedPoints * scoreMultiplier);
 
           totalScore += calculatedPoints;
           document.getElementById('scoreDisplay').innerText = `점수: ${totalScore}`;
 
+          let extraGachaPt = achBuffs.gachaPointBuff;
           if (card && card.effectType === 'gacha_point') {
-            gachaPoints += card.value;
+            extraGachaPt += card.value;
+          }
+          if (extraGachaPt > 0) {
+            gachaPoints += extraGachaPt;
             localStorage.setItem('sq_gacha_points', gachaPoints);
           }
 
@@ -1016,11 +1180,12 @@
     function drawGachaCard() {
       if (gachaPoints < 10) return;
 
+      const prevCompleted = checkAchievements();
+
       // 10 포인트 차감
       gachaPoints -= 10;
       localStorage.setItem('sq_gacha_points', gachaPoints);
       updateGachaModalUI();
-      updateMainBuffDisplay();
 
       // 무작위 추첨
       const rand = Math.random() * 100;
@@ -1040,6 +1205,21 @@
         localStorage.setItem('sq_my_cards', JSON.stringify(myCards));
       }
 
+      updateMainBuffDisplay();
+
+      const newCompleted = checkAchievements();
+      const newlyUnlocked = newCompleted.filter(id => !prevCompleted.includes(id));
+      let unlockNoticeHtml = '';
+
+      if (newlyUnlocked.length > 0) {
+        const unlockedTitles = ACHIEVEMENTS.filter(a => newlyUnlocked.includes(a.id)).map(a => a.title).join(', ');
+        unlockNoticeHtml = `
+          <div style="background: #fef3c7; border: 1px solid #f59e0b; color: #b45309; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: bold; margin-bottom: 8px;">
+            🏆 달성과제 달성! [${unlockedTitles}]
+          </div>
+        `;
+      }
+
       confetti({ particleCount: 100, spread: 80, origin: { y: 0.5 } });
 
       document.getElementById('gachaResultContainer').innerHTML = `
@@ -1048,6 +1228,7 @@
           <h3 style="margin: 12px 0 6px 0;">${drawnCard.name}</h3>
           <p style="font-size: 13px; font-weight: bold; color: #475569;">${drawnCard.desc}</p>
         </div>
+        ${unlockNoticeHtml}
         <p style="font-size: 14px; font-weight: bold; color: #16a34a; margin-bottom: 12px;">✨ 획득 성공! 도감에 저장되었습니다.</p>
         <button id="drawGachaBtn" onclick="drawGachaCard()" style="padding: 12px 24px; font-size: 15px; font-weight: bold; background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: white; border: none; border-radius: 10px; cursor: pointer;">
           한 번 더 뽑기 (10 pt)
@@ -1141,6 +1322,64 @@
       localStorage.setItem('sq_equipped_card', cardId);
       updateMainBuffDisplay();
       renderDeckList();
+    }
+
+    // 🏆 달성과제 모달
+    function openAchievementModal() {
+      renderAchievementList();
+      document.getElementById('achievementModal').classList.add('active');
+    }
+
+    function closeAchievementModal() {
+      document.getElementById('achievementModal').classList.remove('active');
+    }
+
+    function renderAchievementList() {
+      const container = document.getElementById('achievementListContainer');
+      container.innerHTML = '';
+
+      const completedIds = checkAchievements();
+      const statsEl = document.getElementById('achievementHeaderStats');
+      if (statsEl) {
+        statsEl.innerText = `달성: ${completedIds.length} / ${ACHIEVEMENTS.length}`;
+      }
+
+      ACHIEVEMENTS.forEach(ach => {
+        const currentCount = getOwnedCountByGrade(ach.gradeFilter);
+        const targetCount = ach.targetCount;
+        const isCompleted = completedIds.includes(ach.id);
+        const percent = Math.min(100, Math.round((currentCount / targetCount) * 100));
+
+        const itemEl = document.createElement('div');
+        itemEl.className = `achievement-item ${isCompleted ? 'completed' : ''}`;
+
+        itemEl.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="font-size: 16px;">${isCompleted ? '🏆' : '🎯'}</span>
+                <strong style="font-size: 15px; color: ${isCompleted ? '#b45309' : '#1e293b'}">${ach.title}</strong>
+              </div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 3px;">${ach.desc}</div>
+            </div>
+            <div>
+              ${isCompleted ?
+                '<span style="display: inline-block; padding: 3px 8px; border-radius: 12px; background: #f59e0b; color: white; font-size: 11px; font-weight: bold;">✨ 달성 완료</span>' :
+                `<span style="font-size: 12px; font-weight: bold; color: #64748b;">${currentCount} / ${targetCount}</span>`
+              }
+            </div>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 2px;">
+            <span style="color: #059669; font-weight: bold;">🎁 보너스: ${ach.rewardDesc}</span>
+            <span style="color: #94a3b8; font-size: 11px;">${percent}%</span>
+          </div>
+          <div class="achievement-progress-bar">
+            <div class="achievement-progress-fill" style="width: ${percent}%;"></div>
+          </div>
+        `;
+
+        container.appendChild(itemEl);
+      });
     }
 
     initGame();
