@@ -1187,6 +1187,20 @@
       }
     }
 
+    // 달성과제 데이터 로드 (백엔드 API 단일 원본)
+    async function loadAchievements() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/achievements`);
+        if (response.ok) {
+          ACHIEVEMENTS = await response.json();
+        } else {
+          console.error('달성과제 API 응답 오류:', response.status);
+        }
+      } catch (e) {
+        console.error('달성과제 API 연결 실패:', e);
+      }
+    }
+
     // 환생 상점 데이터 로드
     async function loadRebirthShop() {
       try {
