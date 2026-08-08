@@ -204,5 +204,62 @@
     "effectType": "shield",
     "effectValue": 1,
     "rewardDesc": "오답 방어 보호막 +1회"
+  },
+
+  {
+    "id": "ach_ans1",
+    "title": "정답의 첫걸음",
+    "desc": "퀴즈 정답 10개 달성",
+    "gradeFilter": "ANSWERS",
+    "targetCount": 10,
+    "effectType": "gacha_point",
+    "effectValue": 1,
+    "rewardDesc": "정답 시 가챠포인트 +1pt"
+  },
+  {
+    "id": "ach_ans2",
+    "title": "주식 퀴즈 탐험가",
+    "desc": "퀴즈 정답 100개 달성",
+    "gradeFilter": "ANSWERS",
+    "targetCount": 100,
+    "effectType": "score",
+    "effectValue": 0.05,
+    "rewardDesc": "획득 점수 +5%"
+  },
+  {
+    "id": "ach_ans3",
+    "title": "주식 퀴즈 베테랑",
+    "desc": "퀴즈 정답 1,000개 달성",
+    "gradeFilter": "ANSWERS",
+    "targetCount": 1000,
+    "effects": [
+      { "effectType": "combo_bonus", "effectValue": 25 },
+      { "effectType": "gacha_point", "effectValue": 1 }
+    ],
+    "rewardDesc": "콤보당 점수 +25점, 가챠포인트 +1pt"
+  },
+  {
+    "id": "ach_ans4",
+    "title": "주식 퀴즈 마스터",
+    "desc": "퀴즈 정답 10,000개 달성",
+    "gradeFilter": "ANSWERS",
+    "targetCount": 10000,
+    "effects": [
+      { "effectType": "heart", "effectValue": 1 },
+      { "effectType": "timer", "effectValue": 2 }
+    ],
+    "rewardDesc": "기본 목숨 +1개, 제한시간 +2초"
+  },
+  {
+    "id": "ach_ans5",
+    "title": "주식 퀴즈의 신",
+    "desc": "퀴즈 정답 100,000개 달성",
+    "gradeFilter": "ANSWERS",
+    "targetCount": 100000,
+    "effects": [
+      { "effectType": "shield", "effectValue": 1 },
+      { "effectType": "score", "effectValue": 0.15 }
+    ],
+    "rewardDesc": "오답 방어 보호막 +1회, 획득 점수 +15%"
   }
 ]

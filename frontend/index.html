@@ -162,6 +162,15 @@
       transition: width 0.3s ease;
     }
 
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-20px) scale(0.9); }
+    }
+
     /* 대시보드 상태바 */
     .status-bar {
       display: flex;
@@ -549,6 +558,7 @@
 </head>
 
 <body>
+  <div id="toastContainer" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: flex; flex-direction: column; gap: 8px; pointer-events: none;"></div>
 
   <div class="container" id="gameContainer">
     <!-- 1. 백엔드 연결 로딩 화면 -->
@@ -800,6 +810,7 @@
     let myCards = JSON.parse(localStorage.getItem('sq_my_cards')) || ['c1'];
     let equippedCardId = localStorage.getItem('sq_equipped_card') || 'c1';
     let gachaPoints = parseInt(localStorage.getItem('sq_gacha_points')) || 0; // 가챠 포인트 누적 저장
+    let totalCorrectAnswers = parseInt(localStorage.getItem('sq_total_correct_answers')) || 0; // 누적 정답 수 저장
 
     let quizzes = [];
     let currentIndex = 0;
@@ -833,10 +844,17 @@
       return CARD_DATABASE.filter(c => c.grade === grade && myCards.includes(c.id)).length;
     }
 
+    function getAchievementProgress(ach) {
+      if (ach.gradeFilter === 'ANSWERS') {
+        return totalCorrectAnswers;
+      }
+      return getOwnedCountByGrade(ach.gradeFilter);
+    }
+
     function checkAchievements() {
       const completedList = [];
       ACHIEVEMENTS.forEach(ach => {
-        const count = getOwnedCountByGrade(ach.gradeFilter);
+        const count = getAchievementProgress(ach);
         if (count >= ach.targetCount) {
           completedList.push(ach.id);
         }
@@ -857,12 +875,20 @@
       const completed = checkAchievements();
       ACHIEVEMENTS.forEach(ach => {
         if (completed.includes(ach.id)) {
-          if (ach.effectType === 'score') buffs.scoreBuff += ach.effectValue;
-          else if (ach.effectType === 'timer') buffs.timerBuff += ach.effectValue;
-          else if (ach.effectType === 'heart') buffs.heartBuff += ach.effectValue;
-          else if (ach.effectType === 'shield') buffs.shieldBuff += ach.effectValue;
-          else if (ach.effectType === 'combo_bonus') buffs.comboBuff += ach.effectValue;
-          else if (ach.effectType === 'gacha_point') buffs.gachaPointBuff += ach.effectValue;
+          const applyEffect = (type, val) => {
+            if (type === 'score') buffs.scoreBuff += val;
+            else if (type === 'timer') buffs.timerBuff += val;
+            else if (type === 'heart') buffs.heartBuff += val;
+            else if (type === 'shield') buffs.shieldBuff += val;
+            else if (type === 'combo_bonus') buffs.comboBuff += val;
+            else if (type === 'gacha_point') buffs.gachaPointBuff += val;
+          };
+
+          if (ach.effects && Array.isArray(ach.effects)) {
+            ach.effects.forEach(eff => applyEffect(eff.effectType, eff.effectValue));
+          } else if (ach.effectType) {
+            applyEffect(ach.effectType, ach.effectValue);
+          }
         }
       });
 
@@ -1110,6 +1136,18 @@
         if (result.is_correct && !isTimeout) {
           selectedBtn.classList.add('correct');
           combo++;
+
+          const prevAchCompleted = checkAchievements();
+          totalCorrectAnswers++;
+          localStorage.setItem('sq_total_correct_answers', totalCorrectAnswers);
+
+          const newAchCompleted = checkAchievements();
+          const newlyUnlocked = newAchCompleted.filter(id => !prevAchCompleted.includes(id));
+          if (newlyUnlocked.length > 0) {
+            const unlockedTitles = ACHIEVEMENTS.filter(a => newlyUnlocked.includes(a.id)).map(a => a.title).join(', ');
+            showToast(`🏆 달성과제 완료! [${unlockedTitles}]`);
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.5 } });
+          }
 
           const speedBonus = Math.floor(timeLeft * 10);
           const achBuffs = getAchievementBuffs();
@@ -1458,6 +1496,31 @@
       document.getElementById('achievementModal').classList.remove('active');
     }
 
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        background: linear-gradient(135deg, #fbbf24, #d97706);
+        color: #fff;
+        padding: 10px 18px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        box-shadow: 0 10px 25px rgba(217, 119, 6, 0.4);
+        animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), toastOut 0.4s ease-in 2.6s forwards;
+      `;
+      toast.innerText = message;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        if (toast.parentNode) {
+          toast.parentNode.removeChild(toast);
+        }
+      }, 3000);
+    }
+
     function renderAchievementList() {
       const container = document.getElementById('achievementListContainer');
       container.innerHTML = '';
@@ -1469,7 +1532,7 @@
       }
 
       ACHIEVEMENTS.forEach(ach => {
-        const currentCount = getOwnedCountByGrade(ach.gradeFilter);
+        const currentCount = getAchievementProgress(ach);
         const targetCount = ach.targetCount;
         const isCompleted = completedIds.includes(ach.id);
         const percent = Math.min(100, Math.round((currentCount / targetCount) * 100));
@@ -1489,7 +1552,7 @@
             <div>
               ${isCompleted ?
                 '<span style="display: inline-block; padding: 3px 8px; border-radius: 12px; background: #f59e0b; color: white; font-size: 11px; font-weight: bold;">✨ 달성 완료</span>' :
-                `<span style="font-size: 12px; font-weight: bold; color: #64748b;">${currentCount} / ${targetCount}</span>`
+                `<span style="font-size: 12px; font-weight: bold; color: #64748b;">${currentCount.toLocaleString()} / ${targetCount.toLocaleString()}</span>`
               }
             </div>
           </div>
