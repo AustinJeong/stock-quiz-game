@@ -60,6 +60,9 @@ except Exception as e:
     REBIRTH_SHOP_DATABASE = []
 
 # 2. 데이터 모델
+class QuizBatchRequest(BaseModel):
+    ids: List[str]
+
 class VerifyRequest(BaseModel):
     quiz_id: str
     selected_index: int
@@ -96,6 +99,43 @@ def get_achievements():
 def get_rebirth_shop():
     """환생 상점 상품 목록 반환"""
     return REBIRTH_SHOP_DATABASE
+
+@app.get("/api/quizzes/all")
+def get_all_quizzes():
+    """전체 퀴즈 데이터 목록 반환 (정답 정보 제외)"""
+    if not QUIZ_DATABASE:
+        return []
+    safe_quizzes = []
+    for item in QUIZ_DATABASE:
+        safe_quizzes.append({
+            "id": item["id"],
+            "tier": item["tier"],
+            "category": item["category"],
+            "question": item["question"],
+            "options": item["options"],
+            "points": item["points"]
+        })
+    return safe_quizzes
+
+@app.post("/api/quizzes/by-ids")
+def get_quizzes_by_ids(req: QuizBatchRequest):
+    """지정한 ID 목록 순서대로 퀴즈 반환"""
+    if not QUIZ_DATABASE:
+        return []
+    quiz_map = {q["id"]: q for q in QUIZ_DATABASE}
+    safe_quizzes = []
+    for q_id in req.ids:
+        if q_id in quiz_map:
+            item = quiz_map[q_id]
+            safe_quizzes.append({
+                "id": item["id"],
+                "tier": item["tier"],
+                "category": item["category"],
+                "question": item["question"],
+                "options": item["options"],
+                "points": item["points"]
+            })
+    return safe_quizzes
 
 @app.get("/api/quizzes")
 def get_random_quizzes(count: int = 10):

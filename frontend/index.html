@@ -905,7 +905,9 @@
   </div>
 
   <script>
-    const API_BASE_URL = 'https://stock-quiz-game.onrender.com';
+    const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === '::1')
+      ? 'http://localhost:8000'
+      : 'https://stock-quiz-game.onrender.com';
 
     // 카드 마스터 데이터 (cards.json 또는 API로부터 동적 로드)
     let CARD_DATABASE = [];
@@ -1213,18 +1215,53 @@
       }
     }
 
+    // 덱 셔플 방식 (Card Deck System): localStorage 영구 보관 & 100% 균등 출제
+    async function loadDeckQuizzes(count = 10) {
+      let remainingIds = [];
+      try {
+        remainingIds = JSON.parse(localStorage.getItem('sq_remaining_quiz_ids')) || [];
+      } catch (e) {
+        remainingIds = [];
+      }
+
+      // 덱에 남아있는 문제 수가 부족하면 전체 퀴즈 목록을 받아와 무작위 셔플 후 충전
+      if (!Array.isArray(remainingIds) || remainingIds.length < count) {
+        const allRes = await fetch(`${API_BASE_URL}/api/quizzes/all`);
+        if (!allRes.ok) throw new Error('전체 퀴즈 데이터 조회 실패');
+        const allQuizzes = await allRes.json();
+
+        // Fisher-Yates 셔플 알고리즘
+        const shuffledIds = allQuizzes.map(q => q.id);
+        for (let i = shuffledIds.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffledIds[i], shuffledIds[j]] = [shuffledIds[j], shuffledIds[i]];
+        }
+        remainingIds = shuffledIds;
+      }
+
+      // 앞에서부터 count개 추출
+      const selectedIds = remainingIds.splice(0, count);
+      localStorage.setItem('sq_remaining_quiz_ids', JSON.stringify(remainingIds));
+
+      // 지정된 ID 목록으로 서버에 퀴즈 데이터 요청
+      const batchRes = await fetch(`${API_BASE_URL}/api/quizzes/by-ids`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: selectedIds })
+      });
+
+      if (!batchRes.ok) throw new Error('퀴즈 데이터 로드 실패');
+      return await batchRes.json();
+    }
+
     // 1. 서버 초기 연결
     async function initGame() {
       await Promise.all([loadCards(), loadAchievements(), loadRebirthShop()]);
       updateMainRebirthBadge();
       updateMainBuffDisplay();
 
-
       try {
-        const response = await fetch(`${API_BASE_URL}/api/quizzes?count=10`);
-        if (!response.ok) throw new Error('서버 응답 오류');
-
-        quizzes = await response.json();
+        quizzes = await loadDeckQuizzes(10);
 
         document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainScreen').style.display = 'block';
