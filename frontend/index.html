@@ -256,6 +256,135 @@
       transform: scale(0.98);
     }
 
+    .stage-select-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .stage-btn {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid transparent;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .stage-btn:active {
+      transform: scale(0.98);
+    }
+
+    .stage-btn-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .stage-icon {
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+      flex-shrink: 0;
+    }
+
+    .stage-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .stage-title {
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .stage-desc {
+      font-size: 12px;
+      opacity: 0.88;
+    }
+
+    .stage-badge {
+      font-size: 12px;
+      font-weight: bold;
+      padding: 6px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    /* 🟢 초급 버튼 스타일 */
+    .stage-btn-beginner {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+    }
+
+    .stage-btn-beginner:hover {
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.38);
+      transform: translateY(-2px);
+    }
+
+    .stage-btn-beginner .stage-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    /* 🟡 중급 버튼 스타일 (준비 중) */
+    .stage-btn-intermediate {
+      background: linear-gradient(135deg, #fffbeb, #fef3c7);
+      border-color: #fde68a;
+      color: #92400e;
+    }
+
+    .stage-btn-intermediate:hover {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+
+    .stage-btn-intermediate .stage-icon {
+      background: #fef08a;
+    }
+
+    .stage-btn-intermediate .stage-badge {
+      background: #f59e0b;
+      color: white;
+    }
+
+    /* 👑 고급 버튼 스타일 (준비 중) */
+    .stage-btn-advanced {
+      background: linear-gradient(135deg, #faf5ff, #f3e8ff);
+      border-color: #e9d5ff;
+      color: #6b21a8;
+    }
+
+    .stage-btn-advanced:hover {
+      background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+    }
+
+    .stage-btn-advanced .stage-icon {
+      background: #e9d5ff;
+    }
+
+    .stage-btn-advanced .stage-badge {
+      background: #9333ea;
+      color: white;
+    }
+
     .buff-card-info {
       background: #eff6ff;
       border: 1px dashed #3b82f6;
@@ -636,7 +765,41 @@
         • 하트 <b>3개</b> 제공 / 문제당 제한시간 <b>10초</b>
       </div>
 
-      <button class="start-btn" onclick="startGame()">🚀 퀴즈 게임 시작하기</button>
+      <!-- 난이도별 퀴즈 게임 시작 (초급, 중급, 고급) -->
+      <div class="stage-select-container">
+        <button class="stage-btn stage-btn-beginner" onclick="startQuizStage(1)">
+          <div class="stage-btn-left">
+            <span class="stage-icon">🌱</span>
+            <div class="stage-text-group">
+              <div class="stage-title">초급 퀴즈 게임</div>
+              <div class="stage-desc">기초 용어 & 주식 기본 상식 (입문)</div>
+            </div>
+          </div>
+          <div class="stage-badge">시작 ▶</div>
+        </button>
+
+        <button class="stage-btn stage-btn-intermediate" onclick="startQuizStage(2)">
+          <div class="stage-btn-left">
+            <span class="stage-icon">🔥</span>
+            <div class="stage-text-group">
+              <div class="stage-title">중급 퀴즈 게임</div>
+              <div class="stage-desc">실전 차트 분석 & 매매 기법 (심화)</div>
+            </div>
+          </div>
+          <div class="stage-badge">준비 중 🔒</div>
+        </button>
+
+        <button class="stage-btn stage-btn-advanced" onclick="startQuizStage(3)">
+          <div class="stage-btn-left">
+            <span class="stage-icon">👑</span>
+            <div class="stage-text-group">
+              <div class="stage-title">고급 퀴즈 게임</div>
+              <div class="stage-desc">거시경제 & 파생상품·전문 투자 (마스터)</div>
+            </div>
+          </div>
+          <div class="stage-badge">준비 중 🔒</div>
+        </button>
+      </div>
     </div>
 
     <!-- 3. 퀴즈 본문 화면 -->
@@ -1215,20 +1378,29 @@
       }
     }
 
+    // 선택된 스테이지 (1: 초급, 2: 중급, 3: 고급)
+    let currentSelectedStage = 1;
+
     // 덱 셔플 방식 (Card Deck System): localStorage 영구 보관 & 100% 균등 출제
-    async function loadDeckQuizzes(count = 10) {
+    async function loadDeckQuizzes(count = 10, stage = 1) {
+      const stageNum = stage || currentSelectedStage || 1;
+      const storageKey = `sq_remaining_quiz_ids_stage_${stageNum}`;
       let remainingIds = [];
       try {
-        remainingIds = JSON.parse(localStorage.getItem('sq_remaining_quiz_ids')) || [];
+        remainingIds = JSON.parse(localStorage.getItem(storageKey)) || [];
       } catch (e) {
         remainingIds = [];
       }
 
       // 덱에 남아있는 문제 수가 부족하면 전체 퀴즈 목록을 받아와 무작위 셔플 후 충전
       if (!Array.isArray(remainingIds) || remainingIds.length < count) {
-        const allRes = await fetch(`${API_BASE_URL}/api/quizzes/all`);
-        if (!allRes.ok) throw new Error('전체 퀴즈 데이터 조회 실패');
+        const allRes = await fetch(`${API_BASE_URL}/api/quizzes/all?stage=${stageNum}`);
+        if (!allRes.ok) throw new Error(`Stage ${stageNum} 전체 퀴즈 데이터 조회 실패`);
         const allQuizzes = await allRes.json();
+
+        if (!allQuizzes || allQuizzes.length === 0) {
+          throw new Error(`Stage ${stageNum}에 등록된 문제가 없습니다.`);
+        }
 
         // Fisher-Yates 셔플 알고리즘
         const shuffledIds = allQuizzes.map(q => q.id);
@@ -1241,7 +1413,7 @@
 
       // 앞에서부터 count개 추출
       const selectedIds = remainingIds.splice(0, count);
-      localStorage.setItem('sq_remaining_quiz_ids', JSON.stringify(remainingIds));
+      localStorage.setItem(storageKey, JSON.stringify(remainingIds));
 
       // 지정된 ID 목록으로 서버에 퀴즈 데이터 요청
       const batchRes = await fetch(`${API_BASE_URL}/api/quizzes/by-ids`, {
@@ -1261,7 +1433,7 @@
       updateMainBuffDisplay();
 
       try {
-        quizzes = await loadDeckQuizzes(10);
+        quizzes = await loadDeckQuizzes(10, currentSelectedStage);
 
         document.getElementById('loadingScreen').style.display = 'none';
         document.getElementById('mainScreen').style.display = 'block';
@@ -1322,8 +1494,32 @@
       textEl.innerHTML = cardText + passiveText;
     }
 
+    // 난이도별 퀴즈 시작 핸들러
+    function startQuizStage(stage) {
+      if (stage === 1) {
+        currentSelectedStage = 1;
+        startGame(1);
+      } else if (stage === 2) {
+        showToast('🚧 중급 퀴즈는 현재 문제 출제 준비 중입니다! 곧 업데이트됩니다.');
+      } else if (stage === 3) {
+        showToast('🚧 고급 퀴즈는 현재 문제 출제 준비 중입니다! 곧 업데이트됩니다.');
+      }
+    }
+
     // 2. 게임 시작
-    function startGame() {
+    async function startGame(stage = 1) {
+      currentSelectedStage = stage || 1;
+      
+      // 이미 로드된 퀴즈가 없거나 다른 스테이지라면 로드
+      if (!quizzes || quizzes.length === 0) {
+        try {
+          quizzes = await loadDeckQuizzes(10, currentSelectedStage);
+        } catch (err) {
+          alert('퀴즈 데이터를 불러올 수 없습니다: ' + err.message);
+          return;
+        }
+      }
+
       document.getElementById('mainScreen').style.display = 'none';
       document.getElementById('quizCard').classList.add('active');
 

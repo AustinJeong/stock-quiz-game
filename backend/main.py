@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 import json
 import os
 import random
@@ -19,24 +19,39 @@ app.add_middleware(
 
 # 1. JSON 데이터베이스 파일 로드
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-JSON_PATH = os.path.join(BASE_DIR, "stage1_quizzes.json")
+STAGE1_PATH = os.path.join(BASE_DIR, "stage1_quizzes.json")
+STAGE2_PATH = os.path.join(BASE_DIR, "stage2_quizzes.json")
+STAGE3_PATH = os.path.join(BASE_DIR, "stage3_quizzes.json")
 CARDS_PATH = os.path.join(BASE_DIR, "cards.json")
 ACHIEVEMENTS_PATH = os.path.join(BASE_DIR, "achievements.json")
 REBIRTH_SHOP_PATH = os.path.join(BASE_DIR, "rebirth_shop.json")
 
-try:
-    with open(JSON_PATH, "r", encoding="utf-8") as f:
-        QUIZ_DATABASE = json.load(f)
-    
-    # ★ 핵심: 서버 실행 시 보기(options)를 무작위로 섞고 정답 인덱스(answer_index)를 자동 재설정
-    for quiz in QUIZ_DATABASE:
-        correct_text = quiz["options"][quiz["answer_index"]]  # 원래 정답 텍스트 보관
-        random.shuffle(quiz["options"])                      # 보기 순서 무작위 셔플
-        quiz["answer_index"] = quiz["options"].index(correct_text)  # 새로 섞인 정답 위치 반영
+STAGE_QUIZZES = {1: [], 2: [], 3: []}
+QUIZ_DATABASE = []
 
-except Exception as e:
-    print(f"퀴즈 JSON 파일 로드 실패: {e}")
-    QUIZ_DATABASE = []
+def load_and_shuffle_quizzes(file_path: str, stage_num: int):
+    if not os.path.exists(file_path):
+        return []
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if not isinstance(data, list):
+                return []
+            for quiz in data:
+                if "options" in quiz and "answer_index" in quiz and 0 <= quiz["answer_index"] < len(quiz["options"]):
+                    correct_text = quiz["options"][quiz["answer_index"]]
+                    random.shuffle(quiz["options"])
+                    quiz["answer_index"] = quiz["options"].index(correct_text)
+            return data
+    except Exception as e:
+        print(f"Stage {stage_num} JSON 파일 로드 실패: {e}")
+        return []
+
+STAGE_QUIZZES[1] = load_and_shuffle_quizzes(STAGE1_PATH, 1)
+STAGE_QUIZZES[2] = load_and_shuffle_quizzes(STAGE2_PATH, 2)
+STAGE_QUIZZES[3] = load_and_shuffle_quizzes(STAGE3_PATH, 3)
+
+QUIZ_DATABASE = STAGE_QUIZZES[1] + STAGE_QUIZZES[2] + STAGE_QUIZZES[3]
 
 try:
     with open(CARDS_PATH, "r", encoding="utf-8") as f:
@@ -80,6 +95,9 @@ def health_check():
     return {
         "status": "ok",
         "total_quizzes": len(QUIZ_DATABASE),
+        "stage1_quizzes": len(STAGE_QUIZZES[1]),
+        "stage2_quizzes": len(STAGE_QUIZZES[2]),
+        "stage3_quizzes": len(STAGE_QUIZZES[3]),
         "total_cards": len(CARD_DATABASE),
         "total_achievements": len(ACHIEVEMENTS_DATABASE),
         "total_rebirth_shop_items": len(REBIRTH_SHOP_DATABASE)
@@ -101,19 +119,20 @@ def get_rebirth_shop():
     return REBIRTH_SHOP_DATABASE
 
 @app.get("/api/quizzes/all")
-def get_all_quizzes():
-    """전체 퀴즈 데이터 목록 반환 (정답 정보 제외)"""
-    if not QUIZ_DATABASE:
+def get_all_quizzes(stage: int = Query(default=1, ge=1, le=3)):
+    """스테이지별 전체 퀴즈 데이터 목록 반환 (정답 정보 제외)"""
+    target_quizzes = STAGE_QUIZZES.get(stage, [])
+    if not target_quizzes:
         return []
     safe_quizzes = []
-    for item in QUIZ_DATABASE:
+    for item in target_quizzes:
         safe_quizzes.append({
             "id": item["id"],
-            "tier": item["tier"],
-            "category": item["category"],
+            "tier": item.get("tier", "초급"),
+            "category": item.get("category", "기초"),
             "question": item["question"],
             "options": item["options"],
-            "points": item["points"]
+            "points": item.get("points", 100)
         })
     return safe_quizzes
 
@@ -129,31 +148,32 @@ def get_quizzes_by_ids(req: QuizBatchRequest):
             item = quiz_map[q_id]
             safe_quizzes.append({
                 "id": item["id"],
-                "tier": item["tier"],
-                "category": item["category"],
+                "tier": item.get("tier", "초급"),
+                "category": item.get("category", "기초"),
                 "question": item["question"],
                 "options": item["options"],
-                "points": item["points"]
+                "points": item.get("points", 100)
             })
     return safe_quizzes
 
 @app.get("/api/quizzes")
-def get_random_quizzes(count: int = 10):
-    """100문제 중 무작위로 count개(기본 5개)를 무작위 선택하여 반환"""
-    if not QUIZ_DATABASE:
+def get_random_quizzes(stage: int = Query(default=1, ge=1, le=3), count: int = 10):
+    """지정된 스테이지에서 count개를 무작위 선택하여 반환"""
+    target_quizzes = STAGE_QUIZZES.get(stage, [])
+    if not target_quizzes:
         return []
     
-    selected = random.sample(QUIZ_DATABASE, min(count, len(QUIZ_DATABASE)))
+    selected = random.sample(target_quizzes, min(count, len(target_quizzes)))
     
     safe_quizzes = []
     for item in selected:
         safe_quizzes.append({
             "id": item["id"],
-            "tier": item["tier"],
-            "category": item["category"],
+            "tier": item.get("tier", "초급"),
+            "category": item.get("category", "기초"),
             "question": item["question"],
             "options": item["options"],
-            "points": item["points"]
+            "points": item.get("points", 100)
         })
     return safe_quizzes
 
@@ -168,6 +188,6 @@ def verify_answer(req: VerifyRequest):
     return VerifyResponse(
         is_correct=is_correct,
         correct_index=quiz["answer_index"],
-        explanation=quiz["explanation"],
-        points=quiz["points"] if is_correct else 0
+        explanation=quiz.get("explanation", ""),
+        points=quiz.get("points", 100) if is_correct else 0
     )
