@@ -345,7 +345,7 @@
       border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
-    /* 🟡 중급 버튼 스타일 (준비 중) */
+    /* 🟡 중급 버튼 스타일 */
     .stage-btn-intermediate {
       background: linear-gradient(135deg, #fffbeb, #fef3c7);
       border-color: #fde68a;
@@ -365,7 +365,7 @@
       color: white;
     }
 
-    /* 👑 고급 버튼 스타일 (준비 중) */
+    /* 👑 고급 버튼 스타일 */
     .stage-btn-advanced {
       background: linear-gradient(135deg, #faf5ff, #f3e8ff);
       border-color: #e9d5ff;
@@ -786,7 +786,7 @@
               <div class="stage-desc">실전 차트 분석 & 매매 기법 (심화)</div>
             </div>
           </div>
-          <div class="stage-badge">준비 중 🔒</div>
+          <div class="stage-badge">시작 ▶</div>
         </button>
 
         <button class="stage-btn stage-btn-advanced" onclick="startQuizStage(3)">
@@ -797,7 +797,7 @@
               <div class="stage-desc">거시경제 & 파생상품·전문 투자 (마스터)</div>
             </div>
           </div>
-          <div class="stage-badge">준비 중 🔒</div>
+          <div class="stage-badge">시작 ▶</div>
         </button>
       </div>
     </div>
@@ -1517,14 +1517,12 @@
 
     // 난이도별 퀴즈 시작 핸들러
     function startQuizStage(stage) {
-      if (stage === 1) {
-        currentSelectedStage = 1;
-        startGame(1);
-      } else if (stage === 2) {
-        showToast('🚧 중급 퀴즈는 현재 문제 출제 준비 중입니다! 곧 업데이트됩니다.');
-      } else if (stage === 3) {
-        showToast('🚧 고급 퀴즈는 현재 문제 출제 준비 중입니다! 곧 업데이트됩니다.');
-      }
+      if (![1, 2, 3].includes(stage)) return;
+
+      // 다른 난이도를 선택하면 기존에 불러온 문제를 비우고 해당 단계 문제를 로드한다.
+      if (stage !== currentSelectedStage) quizzes = [];
+      currentSelectedStage = stage;
+      startGame(stage);
     }
 
     // 2. 게임 시작
