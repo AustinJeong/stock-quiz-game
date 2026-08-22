@@ -1075,18 +1075,39 @@
     // 카드 마스터 데이터 (cards.json 또는 API로부터 동적 로드)
     let CARD_DATABASE = [];
 
+    function readStoredJson(key, fallback, validator) {
+      try {
+        const raw = localStorage.getItem(key);
+        if (raw === null) return fallback;
+        const value = JSON.parse(raw);
+        return validator(value) ? value : fallback;
+      } catch (error) {
+        console.warn(`손상된 저장 데이터 '${key}'를 초기화합니다.`, error);
+        localStorage.removeItem(key);
+        return fallback;
+      }
+    }
+
+    function readStoredNonNegativeInteger(key) {
+      const value = Number.parseInt(localStorage.getItem(key), 10);
+      return Number.isSafeInteger(value) && value >= 0 ? value : 0;
+    }
+
+    const isStringArray = value => Array.isArray(value) && value.every(item => typeof item === 'string');
+    const isPlainObject = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+
     // 저장 데이터
-    let myCards = JSON.parse(localStorage.getItem('sq_my_cards')) || ['c1'];
+    let myCards = readStoredJson('sq_my_cards', ['c1'], isStringArray);
     let equippedCardId = localStorage.getItem('sq_equipped_card') || 'c1';
     let equippedSubCardId = localStorage.getItem('sq_equipped_sub_card') || null;
-    let gachaPoints = parseInt(localStorage.getItem('sq_gacha_points')) || 0; // 가챠 포인트 누적 저장
-    let totalCorrectAnswers = parseInt(localStorage.getItem('sq_total_correct_answers')) || 0; // 누적 정답 수 저장
-    let cardCounts = JSON.parse(localStorage.getItem('sq_card_counts')) || {}; // 카드별 보유 장수
-    let cardLevels = JSON.parse(localStorage.getItem('sq_card_levels')) || {}; // 카드별 성 등급 (0, 1, 2, 3)
+    let gachaPoints = readStoredNonNegativeInteger('sq_gacha_points'); // 가챠 포인트 누적 저장
+    let totalCorrectAnswers = readStoredNonNegativeInteger('sq_total_correct_answers'); // 누적 정답 수 저장
+    let cardCounts = readStoredJson('sq_card_counts', {}, isPlainObject); // 카드별 보유 장수
+    let cardLevels = readStoredJson('sq_card_levels', {}, isPlainObject); // 카드별 성 등급 (0, 1, 2, 3)
 
-    let rebirthCount = parseInt(localStorage.getItem('sq_rebirth_count')) || 0;
-    let rebirthPoints = parseInt(localStorage.getItem('sq_rebirth_points')) || 0;
-    let rebirthUpgrades = JSON.parse(localStorage.getItem('sq_rebirth_upgrades')) || {};
+    let rebirthCount = readStoredNonNegativeInteger('sq_rebirth_count');
+    let rebirthPoints = readStoredNonNegativeInteger('sq_rebirth_points');
+    let rebirthUpgrades = readStoredJson('sq_rebirth_upgrades', {}, isPlainObject);
     let REBIRTH_SHOP_ITEMS = [];
 
     // 소유 카드 초기 개수 & 성 등급 동기화
@@ -1576,9 +1597,9 @@
       }
     }
 
-    function startTimer() {
+    function startTimer(resetTime = true) {
       clearInterval(timerInterval);
-      timeLeft = baseTimeLimit;
+      if (resetTime) timeLeft = baseTimeLimit;
       updateTimerBar();
 
       timerInterval = setInterval(() => {
@@ -1603,9 +1624,14 @@
     }
 
     function handleTimeout() {
-      triggerShake();
       combo = 0;
-      lives--;
+      if (shieldCount > 0) {
+        shieldCount--;
+        showToast('🛡️ 보호막 효과로 시간 초과 목숨 차감을 막았습니다.');
+      } else {
+        lives--;
+        triggerShake();
+      }
       updateHeartsDisplay();
       updateComboDisplay();
 
@@ -1658,7 +1684,14 @@
           body: JSON.stringify({ quiz_id: q.id, selected_index: selectedIndex })
         });
 
+        if (!res.ok) {
+          const errorBody = await res.json().catch(() => ({}));
+          throw new Error(errorBody.detail || `답안 검증 실패 (${res.status})`);
+        }
         const result = await res.json();
+        if (!Number.isInteger(result.correct_index) || result.correct_index < 0 || result.correct_index >= buttons.length) {
+          throw new Error('서버가 유효하지 않은 정답 정보를 반환했습니다.');
+        }
 
         if (result.is_correct && !isTimeout) {
           selectedBtn.classList.add('correct');
@@ -1746,7 +1779,18 @@
         }
 
       } catch (err) {
-        alert('답안 제출 중 오류가 발생했습니다.');
+        console.error('답안 제출 실패:', err);
+        alert('답안 제출 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        if (isTimeout) {
+          if (lives > 0) {
+            document.getElementById('nextBtn').style.display = 'block';
+          } else {
+            finishGameSession('💔 게임 종료!');
+          }
+        } else {
+          buttons.forEach(btn => btn.disabled = false);
+          startTimer(false);
+        }
       }
     }
 

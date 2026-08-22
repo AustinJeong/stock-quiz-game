@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 import json
 import os
 import random
@@ -157,7 +157,10 @@ def get_quizzes_by_ids(req: QuizBatchRequest):
     return safe_quizzes
 
 @app.get("/api/quizzes")
-def get_random_quizzes(stage: int = Query(default=1, ge=1, le=3), count: int = 10):
+def get_random_quizzes(
+    stage: int = Query(default=1, ge=1, le=3),
+    count: int = Query(default=10, ge=1, le=100),
+):
     """지정된 스테이지에서 count개를 무작위 선택하여 반환"""
     target_quizzes = STAGE_QUIZZES.get(stage, [])
     if not target_quizzes:
@@ -183,6 +186,9 @@ def verify_answer(req: VerifyRequest):
     quiz = next((q for q in QUIZ_DATABASE if q["id"] == req.quiz_id), None)
     if not quiz:
         raise HTTPException(status_code=404, detail="해당 퀴즈를 찾을 수 없습니다.")
+
+    if req.selected_index < -1 or req.selected_index >= len(quiz["options"]):
+        raise HTTPException(status_code=422, detail="유효하지 않은 선택지입니다.")
     
     is_correct = (quiz["answer_index"] == req.selected_index)
     return VerifyResponse(
