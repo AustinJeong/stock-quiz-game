@@ -2094,5 +2094,405 @@
     "answer_index": 0,
     "explanation": "ROE는 자기자본을 이용해 얼마의 이익을 냈는지를 나타내므로 자기자본이 같고 이익이 증가하면 ROE는 상승합니다.",
     "points": 100
+  },
+  {
+    "id": "quiz_s1_132",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "ISM 제조업지수에서 일반적으로 경기 확장과 위축을 나누는 기준은?",
+    "options": [
+      "0",
+      "50",
+      "100",
+      "500"
+    ],
+    "answer_index": 1,
+    "explanation": "ISM과 PMI는 일반적으로 50을 경기 확장·위축의 기준으로 본다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_133",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "ISM 제조업지수가 50보다 낮다는 뜻으로 가장 알맞은 것은?",
+    "options": [
+      "제조업 경기 위축",
+      "물가 50% 상승",
+      "실업률 50% 상승",
+      "주가지수 상승 확정"
+    ],
+    "answer_index": 0,
+    "explanation": "50 미만은 조사 대상 기업활동의 위축을 뜻한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_134",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "무역수지 흑자의 의미는?",
+    "options": [
+      "수입액이 수출액보다 많다",
+      "수출액과 수입액이 같다",
+      "수출액이 수입액보다 많다",
+      "정부지출이 세수보다 많다"
+    ],
+    "answer_index": 2,
+    "explanation": "수출이 수입보다 많으면 무역수지 흑자다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_135",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "ADP 취업자 변동이 측정하는 것은?",
+    "options": [
+      "미국 정부부문 고용만의 변화",
+      "미국 민간고용의 월간 변화",
+      "미국 실업급여 총액",
+      "미국 기업의 평균 주가"
+    ],
+    "answer_index": 1,
+    "explanation": "ADP는 민간 급여자료를 이용한 민간고용 추정치다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_136",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "미국 고용동향보고서에 포함되는 대표 항목은?",
+    "options": [
+      "비농업 고용과 실업률",
+      "원유 재고와 환율",
+      "무역수지와 GDP만",
+      "주택가격과 기준금리만"
+    ],
+    "answer_index": 0,
+    "explanation": "비농업 고용, 실업률, 임금이 핵심이다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_137",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "주간 신규 실업수당 청구건수는 무엇을 집계하는가?",
+    "options": [
+      "새로 실업급여를 신청한 사람 수",
+      "신규 취업자 전원",
+      "퇴직자의 보유 주식 수",
+      "기업의 신규채용 공고 수"
+    ],
+    "answer_index": 0,
+    "explanation": "신규 실업급여 신청은 노동시장 냉각 여부를 빠르게 보여준다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_138",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "CPI의 우리말 뜻은?",
+    "options": [
+      "소비자물가지수",
+      "생산자물가지수",
+      "구매관리자지수",
+      "개인소득지수"
+    ],
+    "answer_index": 0,
+    "explanation": "CPI는 Consumer Price Index다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_139",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "PPI가 주로 측정하는 것은?",
+    "options": [
+      "소비자의 주식 투자액",
+      "생산자가 공급하는 상품·서비스 가격 변화",
+      "개인의 근로소득",
+      "주택 매매계약 건수"
+    ],
+    "answer_index": 1,
+    "explanation": "PPI는 생산단계의 가격 변화를 측정한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_140",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "PCE의 뜻으로 가장 알맞은 것은?",
+    "options": [
+      "개인소비지출",
+      "생산설비가동률",
+      "공공자본지출",
+      "기업이익전망"
+    ],
+    "answer_index": 0,
+    "explanation": "PCE는 Personal Consumption Expenditures다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_141",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "연준이 선호하는 물가지표로 알려진 것은?",
+    "options": [
+      "근원 PCE 물가지수",
+      "신규주택판매",
+      "무역수지",
+      "MSCI 지수"
+    ],
+    "answer_index": 0,
+    "explanation": "연준은 통화정책 판단에서 근원 PCE를 특히 중시한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_142",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "소매판매 지표는 무엇을 파악하는 데 주로 쓰이는가?",
+    "options": [
+      "소비 강도",
+      "기업의 공장 생산량만",
+      "중앙은행의 외환보유액",
+      "옵션 계약 수"
+    ],
+    "answer_index": 0,
+    "explanation": "미국 경제에서 소비의 강도를 보여주는 핵심 자료다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_143",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "산업생산이 포함하는 대표 산업 조합은?",
+    "options": [
+      "제조업·광업·유틸리티",
+      "금융업·교육업만",
+      "소매업·음식점업만",
+      "농업만"
+    ],
+    "answer_index": 0,
+    "explanation": "제조업·광업·유틸리티 생산을 포괄한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_144",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "잠정주택판매의 의미는?",
+    "options": [
+      "계약과 대금 지급이 모두 끝난 거래",
+      "계약은 체결됐지만 거래가 아직 완료되지 않은 주택판매",
+      "새로 착공한 주택 수",
+      "임대료가 연체된 주택 수"
+    ],
+    "answer_index": 1,
+    "explanation": "계약 후 거래 완료 전 단계라 기존주택판매의 선행 신호가 된다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_145",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "신규주택판매의 증가는 일반적으로 무엇을 시사할 수 있는가?",
+    "options": [
+      "주택경기 개선",
+      "실업급여 증가 확정",
+      "통화량 감소 확정",
+      "주식시장 휴장"
+    ],
+    "answer_index": 0,
+    "explanation": "신규주택 수요 증가는 주택경기 개선 신호일 수 있다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_146",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "FOMC는 무엇을 결정·논의하는 미국의 회의인가?",
+    "options": [
+      "통화정책과 기준금리",
+      "기업의 배당금",
+      "주가지수 편입 종목",
+      "원유 생산량"
+    ],
+    "answer_index": 0,
+    "explanation": "FOMC는 미국 통화정책을 결정한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_147",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "FOMC 의사록은 무엇인가?",
+    "options": [
+      "기업 실적보고서",
+      "FOMC 회의의 토론 내용과 판단 근거를 담은 기록",
+      "미국 예산안",
+      "주식 주문 내역"
+    ],
+    "answer_index": 1,
+    "explanation": "의사록은 표결 결과보다 더 자세한 논의 내용을 제공한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_148",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "PMI가 50을 초과할 때 일반적인 해석은?",
+    "options": [
+      "기업활동 확장",
+      "기업활동 완전 중단",
+      "물가 50% 하락",
+      "기준금리 50% 인상"
+    ],
+    "answer_index": 0,
+    "explanation": "50 초과는 전월보다 기업활동이 확장됐다는 뜻이다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_149",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "GDP 수정치의 뜻은?",
+    "options": [
+      "주가지수를 매일 수정한 값",
+      "속보치 이후 추가 자료를 반영한 경제성장률",
+      "기업의 수정 주가목표",
+      "소비자물가의 수정치"
+    ],
+    "answer_index": 1,
+    "explanation": "더 많은 자료로 속보치를 보완한 성장률이다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_150",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "옵션 만기일이란?",
+    "options": [
+      "옵션 계약의 효력이 만료되는 날",
+      "모든 주식이 상장폐지되는 날",
+      "기준금리를 정하는 날",
+      "기업이 배당하는 날"
+    ],
+    "answer_index": 0,
+    "explanation": "만기에는 청산·행사·롤오버 수요가 발생한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_151",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "MSCI 리밸런싱이란?",
+    "options": [
+      "지수 편입·편출과 종목 비중을 재조정하는 것",
+      "중앙은행이 금리를 조정하는 것",
+      "기업이 액면분할하는 것",
+      "거래소가 휴장하는 것"
+    ],
+    "answer_index": 0,
+    "explanation": "편입·편출과 비중 변경을 지수에 반영한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_152",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "금융통화위원회의 대표 역할은?",
+    "options": [
+      "한국의 기준금리와 통화정책 방향 결정",
+      "미국의 실업률 발표",
+      "MSCI 종목 선정",
+      "기업공개 공모가 결정"
+    ],
+    "answer_index": 0,
+    "explanation": "한국은행 금융통화위원회가 한국의 통화정책을 결정한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_153",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "잭슨홀 미팅은 무엇인가?",
+    "options": [
+      "주요 중앙은행 관계자와 경제학자가 참여하는 경제정책 심포지엄",
+      "미국 기업의 실적발표회",
+      "주식 옵션 결제일",
+      "국제 원유 감산회의"
+    ],
+    "answer_index": 0,
+    "explanation": "주요 중앙은행 인사의 정책 신호가 주목받는다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_154",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "기업 실적발표에서 ‘가이던스’란?",
+    "options": [
+      "과거 주가 차트",
+      "기업이 제시하는 향후 실적·사업 전망",
+      "감사인의 이름",
+      "거래소의 매매정지 규정"
+    ],
+    "answer_index": 1,
+    "explanation": "시장은 과거 실적보다 향후 전망에 더 크게 반응하기도 한다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_155",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "TSMC 월간 매출이 반도체 투자자에게 중요한 이유는?",
+    "options": [
+      "글로벌 반도체 수요 흐름을 가늠할 수 있어서",
+      "미국 실업률을 직접 결정해서",
+      "한국 기준금리를 결정해서",
+      "옵션 만기일을 변경해서"
+    ],
+    "answer_index": 0,
+    "explanation": "파운드리 매출은 여러 반도체 수요처의 흐름을 비춘다.",
+    "points": 100
+  },
+  {
+    "id": "quiz_s1_156",
+    "stage": 1,
+    "tier": "초급",
+    "category": "경제지표기초",
+    "question": "증시 휴장일의 의미는?",
+    "options": [
+      "해당 시장의 정규 주식거래가 열리지 않는 날",
+      "모든 종목 가격이 0이 되는 날",
+      "해외시장도 동시에 닫는 날",
+      "기업 실적이 발표되지 않는 날"
+    ],
+    "answer_index": 0,
+    "explanation": "해당 시장의 정규거래가 쉬는 날이다.",
+    "points": 100
   }
 ]
